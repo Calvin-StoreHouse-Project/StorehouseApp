@@ -2,13 +2,22 @@
 
 <body>
 
+    <!-- Header -->
     <mat-toolbar>
 
-      <div>
-        <mat-icon>menu</mat-icon>
+      <h1>The StoreHouse</h1>
+
+      <div class="menu-items">
+        <a mat-button routerLink="/home">Home</a>
+        <a mat-button routerLink="/current">Current</a>
+        <a mat-button routerLink="/archive">Archive</a>
+        <a mat-button routerLink="/layout">Layout</a>
       </div>
 
     </mat-toolbar>
+
+    <!-- allows for successful routing between components -->
+    <router-outlet></router-outlet>
 
 </body>
 
