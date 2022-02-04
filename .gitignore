@@ -1,33 +1,3 @@
-Skip to content
-Search or jump to…
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@colemanulry 
-Sivvu
-/
-sivvu-angular
-Private
-Code
-Issues
-1
-Pull requests
-5
-Discussions
-Actions
-Projects
-Security
-Insights
-sivvu-angular/.gitignore
-@gnawnahtan
-gnawnahtan upload basic angular app
-Latest commit f7bc2f8 on Apr 15, 2021
- History
- 1 contributor
-46 lines (39 sloc)  631 Bytes
-   
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
@@ -74,16 +44,3 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-© 2022 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Docs
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
-Loading complete
