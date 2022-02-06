@@ -1,20 +1,17 @@
 import { Component, OnInit } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
 
 export interface CurrentInventory {
   name: string;
   quantity: number;
   units: string;
   dateReceived: Date;
-  dateTBR: Date;
+  dateRemoval: Date;
   location: string;
+  id: number;
+  doc_id: string;
 }
-
-const ELEMENT_DATA: CurrentInventory[] = [
-  {name: "Pencils", quantity: 20, units: "boxes", dateReceived: new Date('01/18/2021'), dateTBR: new Date('07/28/2024'), location: "3"},
-  {name: "Hand Sanitizer", quantity: 80, units: "boxes", dateReceived: new Date('01/18/2022'), dateTBR: new Date('09/28/2022'), location: "2"},
-  {name: "Tissue Boxes", quantity: 150, units: "boxes", dateReceived: new Date('08/02/2020'), dateTBR: new Date('09/01/2024'), location: "1"},
-  {name: "Erasers", quantity: 8, units: "boxes", dateReceived: new Date('01/25/2022'), dateTBR: new Date('10/26/2023'), location: "3"},
-];
 
 @Component({
   selector: 'app-current',
@@ -23,12 +20,40 @@ const ELEMENT_DATA: CurrentInventory[] = [
 })
 export class CurrentComponent implements OnInit {
 
-  constructor() { }
+  items: any[] = [];
+  TABLE_DATA: CurrentInventory[] = [];
+  tableData = new MatTableDataSource(this.TABLE_DATA);
+  displayedColumns: string[] = ['name', 'quantity', 'units', 'dateReceived', 'dateTBR', 'location'];
+
+  constructor(private database: AngularFirestore) { }
 
   ngOnInit(): void {
+    var docRef = this.database.firestore.collection("Inventory")
+    .get().then((querySnapshot) => {
+      querySnapshot.docs.forEach((doc) => {
+
+        let item = doc.data();
+        this.items.push({ doc_id: doc.id, ...item });
+
+      });
+
+      for(let i = 0; i < this.items.length; i++) {
+
+        this.TABLE_DATA[i] = {
+          name: this.items[i].name, quantity: this.items[i].quantity, units: this.items[i].units,
+          dateReceived: this.items[i].dateReceived, dateRemoval: this.items[i].dateRemoval,
+          location: this.items[i].location, id: i, doc_id: this.items[i].doc_id
+        }
+      }
+
+      console.log(this.TABLE_DATA);
+
+      this.tableData = new MatTableDataSource(this.TABLE_DATA);
+
+    })
+    .catch((error) => {
+      console.error("error:", error);
+    })
+
   }
-
-  displayedColumns: string[] = ['name', 'quantity', 'units', 'dateReceived', 'dateTBR', 'location'];
-  dataSource = ELEMENT_DATA;
-
 }
