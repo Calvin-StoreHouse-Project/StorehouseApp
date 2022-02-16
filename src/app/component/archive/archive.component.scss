@@ -1,0 +1,81 @@
+.header-div {
+  margin: auto;
+  width: 50%;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.header {
+  text-align: center;
+}
+
+table {
+  width: 80%;
+  border: 1px solid gray;
+  margin: auto;
+}
+
+.edit-button {
+  width: 39px;
+  border-radius: 8px;
+  border-width: 2px;
+  background-color: #e7e6e6;
+  margin-left: 2px;
+}
+
+.edit-button:hover {
+  width: 39px;
+  border-radius: 8px;
+  border-width: 2px;
+  background-color: #d7d7d7;
+  margin-left: 2px;
+}
+
+th.mat-header-cell {
+  text-align: center !important;
+  font-size: 15px;
+}
+
+td.mat-cell {
+  text-align: center !important;
+}
+
+.mat-row:hover {
+  background-color: #defeff;
+}
+
+.card-con {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inventory-card {
+  margin-top: 50px;
+  margin-bottom: 30px;
+  width: 77%;
+}
+
+.highlight {
+  background: #defeff;
+}
+
+.cen-button-con {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-con {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.input-elems {
+  flex-grow: 4;
+  margin: 10px 10px 10px 10px;
+}
+
+.update-button {
+  background-color: #defeff;
+}
