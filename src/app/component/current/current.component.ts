@@ -5,9 +5,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { UpdateSnackBarComponent } from '../update-snack-bar/update-snack-bar.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
-import { MatSort } from '@angular/material/sort';
-
-
 
 export interface CurrentInventory {
   name: string;
@@ -177,5 +174,34 @@ export class CurrentComponent implements OnInit {
   closeDialog() {
     this.expired = false;
   }
+
+  sortData(sort: Sort) {
+    const data = this.TABLE_DATA.slice();
+    if(!sort.active || sort.direction === '') {
+      this.TABLE_DATA = data;
+      return;
+    }
+
+    this.TABLE_DATA = data.sort((a, b) => {
+      const isAsc = sort.direction === 'asc';
+      switch(sort.active) {
+        case 'name': return this.compare(a.name, b.name, isAsc);
+        case 'quantity': return this.compare(a.quantity, b.quantity, isAsc);
+        case 'units': return this.compare(a.units, b.units, isAsc);
+        case 'dateReceived': return this.compare(a.dateReceived, b.dateReceived, isAsc);
+        case 'dateRemoval': return this.compare(a.dateRemoval, b.dateRemoval, isAsc);
+        case 'location': return this.compare(a.location, b.location, isAsc);
+        default: return 0;
+      }
+    });
+
+    this.tableData = new MatTableDataSource(this.TABLE_DATA);
+
+  }
+
+  compare(a: number | string | Date, b: number | string | Date, isAsc: boolean) {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
 
 }
