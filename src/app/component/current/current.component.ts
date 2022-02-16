@@ -61,7 +61,7 @@ export class CurrentComponent implements OnInit {
     // get today's date
     var today = new Date();
 
-    var docRef = this.database.firestore.collection("Inventory")
+    this.database.firestore.collection("Inventory")
     .get().then((querySnapshot) => {
       querySnapshot.docs.forEach((doc) => {
 
@@ -122,7 +122,43 @@ export class CurrentComponent implements OnInit {
       location: this.InventoryLocation
     });
 
-    this.openSnackBar()
+    this.openSnackBar();
+
+    this.items = [];
+    this.TABLE_DATA = [];
+
+    var today = new Date();
+
+    this.database.firestore.collection("Inventory")
+    .get().then((querySnapshot) => {
+      querySnapshot.docs.forEach((doc) => {
+
+        let item = doc.data();
+        if (item['quantity'] != 0) {
+          this.items.push({ doc_id: doc.id, ...item });
+        }
+        if (item['dateRemoval'].toDate() < today) {
+          this.expiredItems.push(item['name']);
+          this.expired = true;
+        }
+
+      });
+
+      for(let i = 0; i < this.items.length; i++) {
+
+        this.TABLE_DATA[i] = {
+          name: this.items[i].name, quantity: this.items[i].quantity, units: this.items[i].units,
+          dateReceived: this.items[i].dateReceived, dateRemoval: this.items[i].dateRemoval,
+          location: this.items[i].location, id: i, doc_id: this.items[i].doc_id
+        }
+      }
+
+      this.tableData = new MatTableDataSource(this.TABLE_DATA);
+
+    })
+    .catch((error) => {
+      console.error("error:", error);
+    })
 
   }
 
