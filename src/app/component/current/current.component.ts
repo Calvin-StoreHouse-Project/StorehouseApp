@@ -97,7 +97,7 @@ export class CurrentComponent implements OnInit {
     this.selectedItem = row;
 
     this.InventoryName = row.name;
-    this.InventoryQuantity = row.quantity;
+    this.InventoryQuantity = parseInt(row.quantity);
     this.InventoryUnits = row.units;
     this.InventoryDateReceived = row.dateReceived.toDate();
     this.InventoryDateRemoval = row.dateRemoval.toDate();

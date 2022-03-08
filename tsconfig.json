@@ -10,7 +10,7 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noImplicitAny": false,
-
+    "strictPropertyInitialization": false,  // written when performing auth
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,

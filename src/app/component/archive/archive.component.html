@@ -2,6 +2,12 @@
 
 <div class="header-div">
   <h1 class="header">Inventory Archive</h1>
+  <div class="search-con">
+    <mat-form-field appearance="fill">
+      <mat-label>Search...</mat-label>
+      <input matInput (keyup)="filter($event)">
+    </mat-form-field>
+  </div>
 </div>
 
 <table mat-table [dataSource]="tableData">

@@ -79,3 +79,22 @@ td.mat-cell {
 .update-button {
   background-color: #defeff;
 }
+
+.search-con {
+  position: absolute;
+  right: 10vw;
+  top: 95px;
+}
+
+@media screen and (max-width: 780px) {
+  .search-con {
+    margin-top: 50px;
+  }
+
+  table {
+    width: 80%;
+    border: 1px solid gray;
+    margin: auto;
+    margin-top: 80px;
+  }
+}

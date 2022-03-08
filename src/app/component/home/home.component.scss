@@ -1,8 +1,26 @@
 .welcome {
   text-align: center;
-  margin-top: 200px;
+  margin-top: 100px;
 }
 
 .bio {
   text-align: center;
+}
+
+.center-login {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.log-btn {
+  background-color: #defeff;
+  width: 200px;
+  height: 50px;
+  font-size: 20px;
+}
+
+.log-btn:hover {
+  background-color: #c2ffff;
 }

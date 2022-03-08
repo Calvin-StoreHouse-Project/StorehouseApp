@@ -32,11 +32,16 @@ table {
 }
 
 th.mat-header-cell {
-  text-align: center !important;
+  // text-align: center !important;
   font-size: 15px;
 }
 
-td.mat-cell {
+th.cen-head {
+  text-align: center !important;
+  // font-size: 15px;
+}
+
+td.cen-elem {
   text-align: center !important;
 }
 

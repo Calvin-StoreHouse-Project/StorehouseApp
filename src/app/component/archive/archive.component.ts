@@ -94,4 +94,10 @@ export class ArchiveComponent implements OnInit {
     this.selectedRowIndex = row.id;
   }
 
+  // https://www.angularjswiki.com/material/mat-table-filter/#step-1-add-a-search-input-box
+  filter(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.tableData.filter = value.trim().toLowerCase();
+  }
+
 }
