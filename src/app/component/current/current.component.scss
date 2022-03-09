@@ -13,6 +13,12 @@ table {
   width: 80%;
   border: 1px solid gray;
   margin: auto;
+  max-height: 200px;
+}
+
+.table-wrapper {
+  max-height: 300px;
+  overflow: auto;
 }
 
 .edit-button {
@@ -32,7 +38,7 @@ table {
 }
 
 th.mat-header-cell {
-  // text-align: center !important;
+  text-align: center !important;
   font-size: 15px;
 }
 
@@ -87,6 +93,20 @@ td.cen-elem {
 
 .update-button:hover {
   background-color: #c2ffff;
+}
+
+.add-btn {
+  background-color: #defeff;
+}
+
+.add-btn:hover {
+  background-color: #c2ffff;
+}
+
+.add-btn-con {
+  position: absolute;
+  left: 10vw;
+  top: 110px;
 }
 
 .search-con {

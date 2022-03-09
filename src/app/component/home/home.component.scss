@@ -14,13 +14,29 @@
   justify-content: center;
 }
 
-.log-btn {
-  background-color: #defeff;
-  width: 200px;
-  height: 50px;
-  font-size: 20px;
+.login-card {
+  margin-top: 20px;
+  width: 50%;
 }
 
-.log-btn:hover {
-  background-color: #c2ffff;
+.login-btn {
+  // background-color: #70be3c;
+}
+
+.login-btn:hover {
+  // background-color: #94d06c;
+}
+
+.cen-cred {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cen-log-btn {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

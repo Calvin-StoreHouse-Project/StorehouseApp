@@ -13,6 +13,7 @@ table {
   width: 80%;
   border: 1px solid gray;
   margin: auto;
+  margin-bottom: 200px;
 }
 
 .edit-button {
@@ -37,7 +38,7 @@ th.mat-header-cell {
 }
 
 td.mat-cell {
-  text-align: center !important;
+  // text-align: center !important;
 }
 
 .mat-row:hover {

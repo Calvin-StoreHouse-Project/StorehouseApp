@@ -25,6 +25,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { UpdateSnackBarComponent } from './component/update-snack-bar/update-snack-bar.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSortModule } from '@angular/material/sort';
+import { AddSnackBarComponent } from './component/add-snack-bar/add-snack-bar.component';
 
 
 
@@ -46,7 +47,8 @@ const firebaseConfig = {
     ArchiveComponent,
     LayoutComponent,
     HomeComponent,
-    UpdateSnackBarComponent
+    UpdateSnackBarComponent,
+    AddSnackBarComponent
   ],
   imports: [
     BrowserModule,

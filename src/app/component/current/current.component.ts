@@ -3,8 +3,13 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UpdateSnackBarComponent } from '../update-snack-bar/update-snack-bar.component';
+import { AddSnackBarComponent } from '../add-snack-bar/add-snack-bar.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { LoginData } from 'src/app/core/interfaces/login-data.interface';
+import { Router } from '@angular/router';
+
 
 export interface CurrentInventory {
   name: string;
@@ -30,7 +35,7 @@ export class CurrentComponent implements OnInit {
   sortedData: any;
   TABLE_DATA: CurrentInventory[] = [];
   tableData = new MatTableDataSource(this.TABLE_DATA);
-  displayedColumns: string[] = ['name', 'quantity', 'units', 'dateReceived', 'dateTBR', 'location', 'edit'];
+  displayedColumns: string[] = ['name', 'quantity', 'units', 'dateReceived', 'dateTBR', 'location'];
 
   // variable for inventory items
   InventoryName: string = '';
@@ -45,11 +50,13 @@ export class CurrentComponent implements OnInit {
 
   itemClicked: boolean = false;
   expired: boolean = false;
+  addItemBool: boolean = false;
 
   durationInSeconds: number = 3;
 
 
-  constructor(private database: AngularFirestore, private snackbar: MatSnackBar, public dialog: MatDialog) { }
+  constructor(private database: AngularFirestore, private snackbar: MatSnackBar,
+    public dialog: MatDialog) { }
 
 
   // executed on page load
@@ -66,7 +73,7 @@ export class CurrentComponent implements OnInit {
         if (item['quantity'] != 0) {
           this.items.push({ doc_id: doc.id, ...item });
         }
-        if (item['dateRemoval'].toDate() < today) {
+        if (item['dateRemoval'].toDate() < today && item['quantity'] > 0) {
           this.expiredItems.push(item['name']);
           this.expired = true;
         }
@@ -119,7 +126,7 @@ export class CurrentComponent implements OnInit {
       location: this.InventoryLocation
     });
 
-    this.openSnackBar();
+    this.openUpdateSnackBar();
 
     this.items = [];
     this.TABLE_DATA = [];
@@ -134,10 +141,11 @@ export class CurrentComponent implements OnInit {
         if (item['quantity'] != 0) {
           this.items.push({ doc_id: doc.id, ...item });
         }
-        if (item['dateRemoval'].toDate() < today) {
-          this.expiredItems.push(item['name']);
-          this.expired = true;
-        }
+
+        // if (item['dateRemoval'].toDate() < today && item['quantity'] > 0) {
+        //   this.expiredItems.push(item['name']);
+        //   this.expired = true;
+        // }
 
       });
 
@@ -159,8 +167,14 @@ export class CurrentComponent implements OnInit {
 
   }
 
-  openSnackBar() {
+  openUpdateSnackBar() {
     this.snackbar.openFromComponent(UpdateSnackBarComponent, {
+      duration: this.durationInSeconds * 1000
+    })
+  }
+
+  openAddSnackBar() {
+    this.snackbar.openFromComponent(AddSnackBarComponent, {
       duration: this.durationInSeconds * 1000
     })
   }
@@ -201,6 +215,75 @@ export class CurrentComponent implements OnInit {
 
   compare(a: number | string | Date, b: number | string | Date, isAsc: boolean) {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  addItem() {
+
+    // ensure update card is cancelled
+    this.itemClicked = false;
+
+    // empty forms
+    this.InventoryName = '';
+    this.InventoryQuantity = 0;
+    this.InventoryUnits = '';
+    this.InventoryDateReceived = undefined;
+    this.InventoryDateRemoval = undefined;
+    this.InventoryLocation = '';
+
+    // open add item card
+    this.addItemBool = true;
+  }
+
+  addItemToInventory() {
+    this.database.collection("Inventory").add({
+      name: this.InventoryName,
+      quantity: this.InventoryQuantity,
+      units: this.InventoryUnits,
+      dateReceived: this.InventoryDateReceived,
+      dateRemoval: this.InventoryDateRemoval,
+      location: this.InventoryLocation
+    });
+
+    // empty arrays
+    this.items = [];
+    this.TABLE_DATA = [];
+
+    // get today's date
+    var today = new Date();
+
+    this.database.firestore.collection("Inventory")
+    .get().then((querySnapshot) => {
+      querySnapshot.docs.forEach((doc) => {
+
+        let item = doc.data();
+        if (item['quantity'] != 0) {
+          this.items.push({ doc_id: doc.id, ...item });
+        }
+        if (item['dateRemoval'].toDate() < today && item['quantity'] > 0) {
+          this.expiredItems.push(item['name']);
+          this.expired = true;
+        }
+
+      });
+
+      for(let i = 0; i < this.items.length; i++) {
+
+        this.TABLE_DATA[i] = {
+          name: this.items[i].name, quantity: this.items[i].quantity, units: this.items[i].units,
+          dateReceived: this.items[i].dateReceived, dateRemoval: this.items[i].dateRemoval,
+          location: this.items[i].location, id: i, doc_id: this.items[i].doc_id
+        }
+      }
+
+      this.tableData = new MatTableDataSource(this.TABLE_DATA);
+
+      this.openAddSnackBar();
+
+    })
+    .catch((error) => {
+      console.error("error:", error);
+    })
+
   }
 
 
