@@ -11,11 +11,13 @@
     <h1 style="text-align: center">Login</h1>
     <mat-form-field class="cen-cred">
       <mat-label>Username</mat-label>
-      <input matInput [(ngModel)]="email">
+      <input matInput [(ngModel)]="email" required>
+      <mat-icon matSuffix (click)="hide = !hide">person</mat-icon>
     </mat-form-field>
     <mat-form-field class="cen-cred">
       <mat-label>Password</mat-label>
-      <input matInput type="password" [(ngModel)]="password">
+      <input matInput [type]="hide ? 'password' : 'text'" [(ngModel)]="password" required>
+      <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
     </mat-form-field>
     <p *ngIf="error_message" style="color: red; text-align: center">Credentials not found. Try again.</p>
     <div class="cen-log-btn">

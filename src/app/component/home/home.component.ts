@@ -27,6 +27,10 @@ import { windowToggle } from 'rxjs';
 })
 export class HomeComponent implements OnInit {
 
+  // source code on password visibility toggle
+  // https://stackblitz.com/edit/angular-material-password-visibility-toggle?file=src%2Fapp%2Fapp.component.ts
+  hide: boolean = true;
+
   email: any = '';
   password: string = '';
   error_message: boolean = false;
