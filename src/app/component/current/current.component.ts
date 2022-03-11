@@ -6,10 +6,9 @@ import { UpdateSnackBarComponent } from '../update-snack-bar/update-snack-bar.co
 import { AddSnackBarComponent } from '../add-snack-bar/add-snack-bar.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { LoginData } from 'src/app/core/interfaces/login-data.interface';
+import { AuthService } from 'src/app/auth/auth.service';
 import { Router } from '@angular/router';
-
+import { RedirectSnackBarComponent } from '../redirect-snack-bar/redirect-snack-bar.component';
 
 export interface CurrentInventory {
   name: string;
@@ -54,9 +53,10 @@ export class CurrentComponent implements OnInit {
 
   durationInSeconds: number = 3;
 
-
   constructor(private database: AngularFirestore, private snackbar: MatSnackBar,
-    public dialog: MatDialog) { }
+    public dialog: MatDialog, private authService: AuthService, private router: Router) {
+      if(!this.authService.loggedIn) { this.router.navigate(['/home']); this.openRedirectSnackBar(); }
+    }
 
 
   // executed on page load
@@ -175,6 +175,12 @@ export class CurrentComponent implements OnInit {
 
   openAddSnackBar() {
     this.snackbar.openFromComponent(AddSnackBarComponent, {
+      duration: this.durationInSeconds * 1000
+    })
+  }
+
+  openRedirectSnackBar() {
+    this.snackbar.openFromComponent(RedirectSnackBarComponent, {
       duration: this.durationInSeconds * 1000
     })
   }

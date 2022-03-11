@@ -3,8 +3,9 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Sort } from '@angular/material/sort';
-
-import { UpdateSnackBarComponent } from '../update-snack-bar/update-snack-bar.component';
+import { AuthService } from 'src/app/auth/auth.service';
+import { Router } from '@angular/router';
+import { RedirectSnackBarComponent } from '../redirect-snack-bar/redirect-snack-bar.component';
 
 export interface CurrentInventory {
   name: string;
@@ -46,7 +47,9 @@ export class ArchiveComponent implements OnInit {
   durationInSeconds: number = 3;
 
 
-  constructor(private database: AngularFirestore, private snackbar: MatSnackBar) { }
+  constructor(private database: AngularFirestore, private snackbar: MatSnackBar,
+    private authService: AuthService, private router: Router)
+    { if(!this.authService.loggedIn) { this.router.navigate(['/home']); this.openRedirectSnackBar() } }
 
 
   // executed on page load
@@ -127,6 +130,12 @@ export class ArchiveComponent implements OnInit {
 
   compare(a: number | string | Date, b: number | string | Date, isAsc: boolean) {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  openRedirectSnackBar() {
+    this.snackbar.openFromComponent(RedirectSnackBarComponent, {
+      duration: this.durationInSeconds * 1000
+    })
   }
 
 }

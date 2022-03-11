@@ -1,7 +1,24 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { LoginData } from 'src/app/core/interfaces/login-data.interface';
+import { AuthService } from 'src/app/auth/auth.service';
 import { Router } from '@angular/router';
+import { getAuth, connectAuthEmulator, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { initializeApp } from 'firebase/app';
+import { toBase64String } from '@angular/compiler/src/output/source_map';
+import { windowToggle } from 'rxjs';
+
+// const firebaseApp = initializeApp({
+//   apiKey: "AIzaSyD7Fik7QaBpMfGSuKe-B_o68lPbOXpzTCk",
+//   authDomain: "storehouse-eb19b.firebaseapp.com",
+//   projectId: "storehouse-eb19b",
+//   storageBucket: "storehouse-eb19b.appspot.com",
+//   messagingSenderId: "659342098594",
+//   appId: "1:659342098594:web:f0cacf47c316f601c317fb",
+//   measurementId: "G-YP05SREWH6"
+// });
+
+// const auth = getAuth(firebaseApp);
+// connectAuthEmulator(auth, "http://localhost:9099");
+
 
 @Component({
   selector: 'app-home',
@@ -10,25 +27,51 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent implements OnInit {
 
-  username: string = '';
+  email: any = '';
   password: string = '';
+  error_message: boolean = false;
+  isLoggedInUI: boolean = false;
 
-  @Output() formData: EventEmitter<{
-    email: string;
-    password: string;
-  }> = new EventEmitter();
+  // @Output() formData: EventEmitter<{
+  //   email: string;
+  //   password: string;
+  // }> = new EventEmitter();
 
-  constructor() { }
+  constructor(public authService: AuthService, public router: Router) {
+    if(this.authService.loggedIn) {
+      this.isLoggedInUI = true;
+      console.log(this.authService.user);
+      try { this.email = this.authService.user.email; }
+      catch(e) { console.log(e); }
+    }
+  }
 
   ngOnInit(): void {
   }
 
-  // login(loginData: LoginData) {
-  //   this.authService.login(loginData).then(() => {
-  //     this.router.navigate(['/current']).catch((e) => {
-  //       console.log(e.message);
-  //     })
-  //   })
-  // }
+  async login() {
+
+    let email = this.email;
+    let password = this.password;
+
+    try {
+      const userCredentials = await this.authService.login(email, password);
+      this.email = this.authService.getUser()?.email;
+      this.isLoggedInUI = true;
+    } catch(error) {
+      this.error_message = true;
+      console.log(error);
+    }
+  }
+
+  async logout() {
+    await this.authService.logout();
+    this.isLoggedInUI = false;
+    this.error_message = false;
+
+    // empty credentials
+    this.email = '';
+    this.password = ''
+  }
 
 }

@@ -26,8 +26,10 @@ import { UpdateSnackBarComponent } from './component/update-snack-bar/update-sna
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSortModule } from '@angular/material/sort';
 import { AddSnackBarComponent } from './component/add-snack-bar/add-snack-bar.component';
-
-
+import { AuthService } from './auth/auth.service';
+import { provideAuth } from '@angular/fire/auth';
+import { getAuth } from 'firebase/auth';
+import { RedirectSnackBarComponent } from './component/redirect-snack-bar/redirect-snack-bar.component';
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -48,12 +50,11 @@ const firebaseConfig = {
     LayoutComponent,
     HomeComponent,
     UpdateSnackBarComponent,
-    AddSnackBarComponent
+    AddSnackBarComponent,
+    RedirectSnackBarComponent
   ],
   imports: [
     BrowserModule,
-    // AngularFireModule.initializeApp(firebaseConfig),
-    // AngularFirestoreModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,
@@ -69,9 +70,10 @@ const firebaseConfig = {
     MatNativeDateModule,
     MatSnackBarModule,
     MatDialogModule,
-    MatSortModule
+    MatSortModule,
+    provideAuth(() => getAuth())
   ],
-  providers: [MatNativeDateModule],
+  providers: [MatNativeDateModule, AuthService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

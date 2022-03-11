@@ -1,23 +1,33 @@
 
 <!-- Home Screen Code -->
 <h1 class="welcome">Welcome to the StoreHouse Inventory Control System</h1>
-<h3 class="bio">Here, we seek to provide the StoreHouse, a non-profit organization based in Grand Rapids, MI with a prototype
+<!-- <h3 class="bio">Here, we seek to provide the StoreHouse, a non-profit organization based in Grand Rapids, MI with a prototype
   of what an inventory control system could look like.
-</h3>
+</h3> -->
 
 <div class="center-login">
-  <mat-card class="login-card">
+
+  <mat-card class="login-card" *ngIf="!isLoggedInUI">
     <h1 style="text-align: center">Login</h1>
     <mat-form-field class="cen-cred">
       <mat-label>Username</mat-label>
-      <input matInput [(ngModel)]="username">
+      <input matInput [(ngModel)]="email">
     </mat-form-field>
     <mat-form-field class="cen-cred">
       <mat-label>Password</mat-label>
-      <input matInput [(ngModel)]="password">
+      <input matInput type="password" [(ngModel)]="password">
     </mat-form-field>
+    <p *ngIf="error_message" style="color: red; text-align: center">Credentials not found. Try again.</p>
     <div class="cen-log-btn">
-      <button mat-raised-button class="login-btn">Login</button>
+      <button mat-raised-button class="login-btn" (click)="login()">Login</button>
     </div>
   </mat-card>
+
+  <mat-card class="login-card" *ngIf="isLoggedInUI">
+    <h1 style="text-align: center">You are logged in.</h1>
+    <div class="logout-btn">
+      <button mat-raised-button (click)="logout()">Log Out</button>
+    </div>
+  </mat-card>
+
 </div>
