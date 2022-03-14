@@ -9,6 +9,7 @@ import { RedirectSnackBarComponent } from '../redirect-snack-bar/redirect-snack-
 
 export interface CurrentInventory {
   name: string;
+  flagged: boolean;
   quantity: number;
   units: string;
   dateReceived: Date;
@@ -38,6 +39,7 @@ export class ArchiveComponent implements OnInit {
   InventoryDateReceived?: Date;
   InventoryDateRemoval?: Date;
   InventoryLocation: string = '';
+  InventoryFlagged: boolean = false;
 
   selectedItem: any;
   selectedRowIndex: number = -1;
@@ -66,7 +68,8 @@ export class ArchiveComponent implements OnInit {
       for(let i = 0; i < this.items.length; i++) {
 
         this.TABLE_DATA[i] = {
-          name: this.items[i].name, quantity: this.items[i].quantity, units: this.items[i].units,
+          name: this.items[i].name, flagged: this.items[i].flagged,
+          quantity: this.items[i].quantity, units: this.items[i].units,
           dateReceived: this.items[i].dateReceived, dateRemoval: this.items[i].dateRemoval,
           location: this.items[i].location, id: i, doc_id: this.items[i].doc_id
         }
@@ -92,6 +95,7 @@ export class ArchiveComponent implements OnInit {
     this.InventoryDateReceived = row.dateReceived.toDate();
     this.InventoryDateRemoval = row.dateRemoval.toDate();
     this.InventoryLocation = row.location;
+    this.InventoryFlagged = row.flagged;
   }
 
   highlight(row) {

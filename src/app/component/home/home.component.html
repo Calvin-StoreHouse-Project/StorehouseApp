@@ -8,7 +8,7 @@
 <div class="center-login">
 
   <mat-card class="login-card" *ngIf="!isLoggedInUI">
-    <h1 style="text-align: center">Login</h1>
+    <h1 style="text-align: center">Welcome</h1>
     <mat-form-field class="cen-cred">
       <mat-label>Username</mat-label>
       <input matInput [(ngModel)]="email" required>
@@ -21,7 +21,7 @@
     </mat-form-field>
     <p *ngIf="error_message" style="color: red; text-align: center">Credentials not found. Try again.</p>
     <div class="cen-log-btn">
-      <button mat-raised-button class="login-btn" (click)="login()">Login</button>
+      <button mat-raised-button class="login-btn" (click)="login()">Sign in</button>
     </div>
   </mat-card>
 
