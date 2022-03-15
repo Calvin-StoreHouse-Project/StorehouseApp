@@ -40,11 +40,6 @@ export class AuthService {
     return user !== null;
   }
 
-  async  loginWithGoogle(){
-    await  this.afAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-    this.router.navigate(['/current']);
-  }
-
   getUser() {
     console.log(getAuth());
     return getAuth().currentUser;

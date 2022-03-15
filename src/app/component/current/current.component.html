@@ -1,5 +1,3 @@
-
-
 <div class="header-div">
   <h1 class="header">Current Inventory</h1>
   <div class="add-btn-con">
@@ -19,8 +17,16 @@
       <!-- Inventory Name Column -->
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header="name">Name</th>
-        <td mat-cell *matCellDef="let element"> {{element.name}} <mat-icon *ngIf="element.flagged" style="font-size: 15px">flag</mat-icon>
+        <td mat-cell *matCellDef="let element"> {{element.name}}
+          <p *ngIf="element.destroyedInField" style="display:inline; margin-right: 2px;">*</p>
+          <mat-icon *ngIf="element.flagged" style="font-size: 18px">flag</mat-icon>
         </td>
+      </ng-container>
+
+      <!-- Inventory Donor Column -->
+      <ng-container matColumnDef="donor">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="donor">Donor</th>
+        <td mat-cell *matCellDef="let element">{{element.donor}} </td>
       </ng-container>
 
       <!-- Inventory Quantity Column -->
@@ -68,6 +74,9 @@
   </table>
 </div>
 
+<p class="destroyed-txt">* - destroyed in field</p>
+
+
 <!-- to update an item -->
 <div *ngIf="itemClicked" class="card-con">
   <mat-card class="inventory-card">
@@ -79,6 +88,11 @@
         <mat-form-field appearance="fill" class="input-elems">
           <mat-label>Name: </mat-label>
           <input matInput type="text" [(ngModel)]="InventoryName">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="input-elems">
+          <mat-label>Donor: </mat-label>
+          <input matInput type="text" [(ngModel)]="InventoryDonor">
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="input-elems">
@@ -110,12 +124,20 @@
           <input matInput type="text" [(ngModel)]="InventoryLocation">
         </mat-form-field>
 
-        <mat-slide-toggle [(ngModel)]="InventoryFlagged" class="flagged">Flag</mat-slide-toggle>
+        <mat-form-field appearance="fill" class="input-elems">
+          <mat-label>Notes: </mat-label>
+          <textarea matInput placeholder="Type here..." [(ngModel)]="InventoryNotes"></textarea>
+        </mat-form-field>
+
+        <div>
+          <mat-slide-toggle [(ngModel)]="InventoryFlagged" class="flagged">Flag</mat-slide-toggle>
+          <mat-slide-toggle [(ngModel)]="InventoryDestroyedInField" class="destroyed">Destroyed In Field</mat-slide-toggle>
+        </div>
 
       </div>
 
     <div class="cen-button-con">
-      <button mat-raised-button (click)="updateInventory()" class="update-button">Update</button>
+      <button mat-raised-button (click)="checkForTransaction()" class="update-button">Update</button>
     </div>
 
   </mat-card>
@@ -133,6 +155,11 @@
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Name: </mat-label>
             <input matInput type="text" [(ngModel)]="InventoryName">
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="input-elems">
+            <mat-label>Donor: </mat-label>
+            <input matInput type="text" [(ngModel)]="InventoryDonor">
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="input-elems">
@@ -164,6 +191,11 @@
             <input matInput type="text" [(ngModel)]="InventoryLocation">
           </mat-form-field>
 
+          <mat-form-field appearance="fill" class="input-elems">
+            <mat-label>Notes: </mat-label>
+            <textarea matInput placeholder="Type here..." [(ngModel)]="InventoryNotes"></textarea>
+          </mat-form-field>
+
           <mat-slide-toggle [(ngModel)]="InventoryFlagged" class="flagged">Flag</mat-slide-toggle>
 
         </div>
@@ -186,6 +218,27 @@
     <h1 style="text-align: center;">You have an item that is expired and should be removed from the surplus area:</h1>
     <h2 style="text-align: center;">{{expiredItems}}&nbsp;</h2>
     <div class="dialog-close"><button mat-raised-button (click)="closeDialog()" class="ok-btn">OK</button></div>
+  </mat-card>
+
+</div>
+
+<div class="underlay" *ngIf="custPopup"></div>
+
+<div *ngIf="custPopup" class="dialog">
+
+  <mat-card class="dialog-card">
+    <h1 style="text-align: center;">Who is receiving this item?</h1>
+    <div style="display: flex; align-items: center; justify-content: center">
+      <mat-form-field>
+        <mat-label>Customer:</mat-label>
+        <input matInput type="text" [(ngModel)]="InventoryCustomer">
+      </mat-form-field>
+    </div>
+    <p style="color: red; text-align: center;">{{custErrorMessage}}</p>
+    <div class="dialog-close">
+      <button mat-raised-button (click)="ensureCustomerEntered()" class="ok-btn">Enter</button>
+      <button mat-raised-button (click)="closeCustPopup()" class="back-btn">Back</button>
+    </div>
   </mat-card>
 
 </div>

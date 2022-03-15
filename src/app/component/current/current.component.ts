@@ -13,11 +13,14 @@ import { RedirectSnackBarComponent } from '../redirect-snack-bar/redirect-snack-
 export interface CurrentInventory {
   name: string;
   flagged: boolean;
+  donor: string;
   quantity: number;
   units: string;
   dateReceived: Date;
   dateRemoval: Date;
   location: string;
+  destroyedInField: boolean;
+  notes: string;
   id: number;
   doc_id: string;
 }
@@ -35,16 +38,27 @@ export class CurrentComponent implements OnInit {
   sortedData: any;
   TABLE_DATA: CurrentInventory[] = [];
   tableData = new MatTableDataSource(this.TABLE_DATA);
-  displayedColumns: string[] = ['name', 'quantity', 'units', 'dateReceived', 'dateTBR', 'location'];
+  displayedColumns: string[] = ['name', 'donor', 'quantity', 'units', 'dateReceived', 'dateTBR', 'location'];
 
   // variable for inventory items
   InventoryName: string = '';
+  InventoryDonor: string = '';
   InventoryQuantity: number = 0;
   InventoryUnits: string = '';
   InventoryDateReceived?: Date;
   InventoryDateRemoval?: Date;
   InventoryLocation: string = '';
   InventoryFlagged: boolean = false;
+  InventoryNotes: string = '';
+  InventoryDestroyedInField: boolean = false;
+
+  // for inventory transactions
+  InventoryCustomer: string = '';
+  InventoryTransferDate?: Date;
+  oldQuantity: number = 0;
+
+  custPopup: boolean = false;
+  custErrorMessage: string = '';
 
   selectedItem: any;
   selectedRowIndex: number = -1;
@@ -85,13 +99,13 @@ export class CurrentComponent implements OnInit {
       for(let i = 0; i < this.items.length; i++) {
 
         this.TABLE_DATA[i] = {
-          name: this.items[i].name, flagged: this.items[i].flagged, quantity: this.items[i].quantity, units: this.items[i].units,
+          name: this.items[i].name, flagged: this.items[i].flagged, donor: this.items[i].donor,
+          quantity: this.items[i].quantity, units: this.items[i].units,
           dateReceived: this.items[i].dateReceived, dateRemoval: this.items[i].dateRemoval,
-          location: this.items[i].location, id: i, doc_id: this.items[i].doc_id
+          location: this.items[i].location, notes: this.items[i].notes,
+          destroyedInField: this.items[i].destroyedInField, id: i, doc_id: this.items[i].doc_id
         }
       }
-
-      console.log(this.TABLE_DATA);
 
       this.tableData = new MatTableDataSource(this.TABLE_DATA);
 
@@ -104,30 +118,63 @@ export class CurrentComponent implements OnInit {
   // executed on table row click
   clicked(row) {
     this.selectedItem = row;
+    this.oldQuantity = row.quantity
+    this.InventoryCustomer = '';
 
     this.InventoryName = row.name;
+    this.InventoryDonor = row.donor;
     this.InventoryQuantity = parseInt(row.quantity);
     this.InventoryUnits = row.units;
     this.InventoryDateReceived = row.dateReceived.toDate();
     this.InventoryDateRemoval = row.dateRemoval.toDate();
     this.InventoryLocation = row.location;
     this.InventoryFlagged = row.flagged;
+    this.InventoryNotes = row.notes;
+    this.InventoryDestroyedInField = row.destroyedInField;
   }
 
   highlight(row) {
     this.selectedRowIndex = row.id;
   }
 
+  checkForTransaction() {
+
+    // what quantity did customer take
+    let quantityChange = this.oldQuantity - this.InventoryQuantity
+    this.InventoryTransferDate = new Date();
+
+    // if quantity was decremented - transaction occured
+    if(quantityChange > 0) {
+      this.custPopup = true;
+      // this.ensureCustomerEntered();
+      // this.addTransaction();
+    } else {
+      this.updateInventory();
+    }
+  }
+
+  ensureCustomerEntered() {
+    if(this.InventoryCustomer != '') {
+      this.addTransaction();
+      this.updateInventory();
+    } else {
+      this.custErrorMessage = "Please Enter a Customer.";
+    }
+  }
+
   updateInventory() {
     let doc_id = this.selectedItem.doc_id;
     this.database.collection("Inventory").doc(doc_id).update({
       name: this.InventoryName,
+      donor: this.InventoryDonor,
       quantity: this.InventoryQuantity,
       units: this.InventoryUnits,
       dateReceived: this.InventoryDateReceived,
       dateRemoval: this.InventoryDateRemoval,
       location: this.InventoryLocation,
-      flagged: this.InventoryFlagged
+      flagged: this.InventoryFlagged,
+      notes: this.InventoryNotes,
+      destroyedInField: this.InventoryDestroyedInField
     });
 
     this.openUpdateSnackBar();
@@ -146,29 +193,59 @@ export class CurrentComponent implements OnInit {
           this.items.push({ doc_id: doc.id, ...item });
         }
 
-        // if (item['dateRemoval'].toDate() < today && item['quantity'] > 0) {
-        //   this.expiredItems.push(item['name']);
-        //   this.expired = true;
-        // }
-
       });
 
       for(let i = 0; i < this.items.length; i++) {
 
         this.TABLE_DATA[i] = {
-          name: this.items[i].name, flagged: this.items[i].flagged, quantity: this.items[i].quantity, units: this.items[i].units,
+          name: this.items[i].name, flagged: this.items[i].flagged, donor: this.items[i].donor,
+          quantity: this.items[i].quantity, units: this.items[i].units,
           dateReceived: this.items[i].dateReceived, dateRemoval: this.items[i].dateRemoval,
-          location: this.items[i].location, id: i, doc_id: this.items[i].doc_id
+          location: this.items[i].location, notes: this.items[i].notes,
+          destroyedInField: this.items[i].destroyedInField, id: i, doc_id: this.items[i].doc_id
         }
       }
 
       this.tableData = new MatTableDataSource(this.TABLE_DATA);
+
+      this.closeCustPopup();
 
     })
     .catch((error) => {
       console.error("error:", error);
     })
 
+  }
+
+  addTransaction() {
+
+    // what quantity did customer take
+    let quantityChange = this.oldQuantity - this.InventoryQuantity
+    this.InventoryTransferDate = new Date();
+
+    // ADD CUSTOMER POPUP
+    this.database.collection("Transactions").add({
+      customer: this.InventoryCustomer,
+      donor: this.InventoryDonor,
+      item: this.InventoryName,
+      quantity: quantityChange,
+      units: this.InventoryUnits,
+      date: this.InventoryTransferDate
+    });
+
+  }
+
+  customerPopup() {
+    let quantityChange = this.oldQuantity - this.InventoryQuantity;
+    if(quantityChange > 0) {
+      this.custPopup = true;
+    } else {
+      this.updateInventory();
+    }
+  }
+
+  closeCustPopup() {
+    this.custPopup = false;
   }
 
   openUpdateSnackBar() {
@@ -210,6 +287,7 @@ export class CurrentComponent implements OnInit {
       const isAsc = sort.direction === 'asc';
       switch(sort.active) {
         case 'name': return this.compare(a.name, b.name, isAsc);
+        case 'donor': return this.compare(a.donor, b.donor, isAsc);
         case 'quantity': return this.compare(a.quantity, b.quantity, isAsc);
         case 'units': return this.compare(a.units, b.units, isAsc);
         case 'dateReceived': return this.compare(a.dateReceived, b.dateReceived, isAsc);
@@ -234,11 +312,13 @@ export class CurrentComponent implements OnInit {
 
     // empty forms
     this.InventoryName = '';
+    this.InventoryDonor = '';
     this.InventoryQuantity = 0;
     this.InventoryUnits = '';
     this.InventoryDateReceived = undefined;
     this.InventoryDateRemoval = undefined;
     this.InventoryLocation = '';
+    this.InventoryNotes = '';
 
     // open add item card
     this.addItemBool = true;
@@ -247,12 +327,15 @@ export class CurrentComponent implements OnInit {
   addItemToInventory() {
     this.database.collection("Inventory").add({
       name: this.InventoryName,
+      donor: this.InventoryDonor,
       quantity: this.InventoryQuantity,
       units: this.InventoryUnits,
       dateReceived: this.InventoryDateReceived,
       dateRemoval: this.InventoryDateRemoval,
       location: this.InventoryLocation,
-      flagged: this.InventoryFlagged
+      flagged: this.InventoryFlagged,
+      notes: this.InventoryNotes,
+      destroyedInField: false
     });
 
     // empty arrays
@@ -280,9 +363,11 @@ export class CurrentComponent implements OnInit {
       for(let i = 0; i < this.items.length; i++) {
 
         this.TABLE_DATA[i] = {
-          name: this.items[i].name, flagged: this.items[i].flagged, quantity: this.items[i].quantity, units: this.items[i].units,
+          name: this.items[i].name, flagged: this.items[i].flagged, donor: this.items[i].donor,
+          quantity: this.items[i].quantity, units: this.items[i].units,
           dateReceived: this.items[i].dateReceived, dateRemoval: this.items[i].dateRemoval,
-          location: this.items[i].location, id: i, doc_id: this.items[i].doc_id
+          location: this.items[i].location, notes: this.items[i].notes,
+          destroyedInField: this.items[i].destroyedInField, id: i, doc_id: this.items[i].doc_id
         }
       }
 
