@@ -25,8 +25,9 @@ Please explain your initial reactions to the home screen. What is the purpose of
 Complete the following tasks:
 
 1. Sign in using the credentials:
-   username = volunteers@st.com
-   password = volunteers
+
+   - username = volunteers@st.com
+   - password = volunteers
 
 2. If you wanted to see the map of the inventory space, can you navigate to which page could display this information?
 
