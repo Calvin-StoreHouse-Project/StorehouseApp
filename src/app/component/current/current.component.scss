@@ -73,6 +73,8 @@ td.cen-elem {
 }
 
 .cen-button-con {
+  margin-top: -5px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -102,6 +104,16 @@ td.cen-elem {
 
 .add-btn:hover {
   background-color: #c2ffff;
+}
+
+.back-btn-item {
+  background-color: #ff4242;
+  margin-right: 10px;
+}
+
+.save-btn-item {
+  background-color: #7eff63;
+  margin-left: 10px;
 }
 
 .add-btn-con {
@@ -156,6 +168,16 @@ td.cen-elem {
   background-color: #c2ffff;
 }
 
+.cust-ok-btn {
+  background-color: #defeff;
+  margin-left: 10px;
+}
+
+.cust-ok-btn:hover {
+  background-color: #c2ffff;
+  margin-left: 10px;
+}
+
 .enter-btn {
   background-color: #defeff;
   margin-right: 18px;
@@ -174,6 +196,16 @@ td.cen-elem {
 .back-btn:hover {
   background-color: #c2ffff;
   margin-left: 18px;
+}
+
+.cust-back-btn {
+  background-color: #defeff;
+  margin-right: 18px;
+}
+
+.cust-back-btn:hover {
+  background-color: #c2ffff;
+  margin-right: 18px;
 }
 
 .flagged {

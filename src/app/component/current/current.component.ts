@@ -9,6 +9,7 @@ import { Sort } from '@angular/material/sort';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Router } from '@angular/router';
 import { RedirectSnackBarComponent } from '../redirect-snack-bar/redirect-snack-bar.component';
+import { throwToolbarMixedModesError } from '@angular/material/toolbar';
 
 export interface CurrentInventory {
   name: string;
@@ -68,6 +69,18 @@ export class CurrentComponent implements OnInit {
   addItemBool: boolean = false;
 
   durationInSeconds: number = 3;
+
+  isReadOnly: boolean = true;
+  isReadOnlyQuantity: boolean = true;
+
+  quantityPopup: boolean = false;
+  addToPopup: boolean = false;
+  removeFromPopup: boolean = false;
+  removalQuantityPopup: boolean = false;
+  addToQuantity: any = 0;
+  removalQuantity: number = 0;
+
+  quantityConstraintError: string = '';
 
   constructor(private database: AngularFirestore, private snackbar: MatSnackBar,
     public dialog: MatDialog, private authService: AuthService, private router: Router) {
@@ -137,32 +150,73 @@ export class CurrentComponent implements OnInit {
     this.selectedRowIndex = row.id;
   }
 
-  checkForTransaction() {
+  addToQuantityFunc() {
+    this.isReadOnly = true;
+    this.addToPopup = true;
+  }
 
-    // what quantity did customer take
-    let quantityChange = this.oldQuantity - this.InventoryQuantity
-    this.InventoryTransferDate = new Date();
+  removeFromQuantity() {
+    this.isReadOnlyQuantity = true;
+    this.removalQuantityPopup = true;
+  }
 
-    // if quantity was decremented - transaction occured
-    if(quantityChange > 0) {
-      this.custPopup = true;
-      // this.ensureCustomerEntered();
-      // this.addTransaction();
+  checkQuantityConstraint() {
+
+    if (this.InventoryQuantity < this.removalQuantity) {
+      this.quantityConstraintError = "This amount is greater than the current item quantity. Try again."
     } else {
-      this.updateInventory();
+      this.quantityConstraintError = '';
+      this.getCustomer();
     }
+  }
+
+  getCustomer() {
+    this.removalQuantityPopup = false;
+    this.custPopup = true;
+  }
+
+  updateItemInfo() {
+    this.isReadOnly = false;
+  }
+
+  updateQuantity() {
+    this.isReadOnlyQuantity = false;
+    this.quantityPopup = true;
+  }
+
+  saveItemChanges() {
+      this.updateInventory();
+      this.isReadOnly = true;
   }
 
   ensureCustomerEntered() {
     if(this.InventoryCustomer != '') {
-      this.addTransaction();
       this.updateInventory();
+      this.addTransaction();
     } else {
       this.custErrorMessage = "Please Enter a Customer.";
     }
   }
 
+  finalAdd() {
+    this.updateInventory();
+    this.addTransaction();
+  }
+
+  finalRemoval() {
+    this.updateInventory();
+    this.addTransaction();
+  }
+
   updateInventory() {
+
+    console.log(this.addToQuantity);
+    console.log(this.removalQuantity);
+
+    // calculate new quantity
+    this.InventoryQuantity += parseInt(this.addToQuantity);
+    this.InventoryQuantity -= this.removalQuantity;
+
     let doc_id = this.selectedItem.doc_id;
     this.database.collection("Inventory").doc(doc_id).update({
       name: this.InventoryName,
@@ -208,20 +262,25 @@ export class CurrentComponent implements OnInit {
 
       this.tableData = new MatTableDataSource(this.TABLE_DATA);
 
-      this.closeCustPopup();
+      this.custPopup = false;
+      this.addToPopup = false;
+      this.isReadOnlyQuantity = true;
+      this.addToQuantity = 0;
+      this.removalQuantity = 0;
 
     })
     .catch((error) => {
       console.error("error:", error);
     })
-
   }
 
   addTransaction() {
 
-    // what quantity did customer take
-    let quantityChange = this.oldQuantity - this.InventoryQuantity
+    // calculate quantity
+    let quantityChange = this.InventoryQuantity - this.oldQuantity
     this.InventoryTransferDate = new Date();
+
+    this.InventoryCustomer = '';
 
     // ADD CUSTOMER POPUP
     this.database.collection("Transactions").add({
@@ -233,16 +292,18 @@ export class CurrentComponent implements OnInit {
       date: this.InventoryTransferDate
     });
 
+    this.oldQuantity = this.InventoryQuantity;
+
   }
 
-  customerPopup() {
-    let quantityChange = this.oldQuantity - this.InventoryQuantity;
-    if(quantityChange > 0) {
-      this.custPopup = true;
-    } else {
-      this.updateInventory();
-    }
-  }
+  // customerPopup() {
+  //   let quantityChange = this.oldQuantity - this.InventoryQuantity;
+  //   if(quantityChange > 0) {
+  //     this.custPopup = true;
+  //   } else {
+  //     this.updateInventory();
+  //   }
+  // }
 
   closeCustPopup() {
     this.custPopup = false;
@@ -324,7 +385,13 @@ export class CurrentComponent implements OnInit {
     this.addItemBool = true;
   }
 
+  newItem() {
+    this.addItemToInventory();
+    this.newItemTransaction();
+  }
+
   addItemToInventory() {
+    console.log(this.InventoryQuantity);
     this.database.collection("Inventory").add({
       name: this.InventoryName,
       donor: this.InventoryDonor,
@@ -380,6 +447,21 @@ export class CurrentComponent implements OnInit {
       console.error("error:", error);
     })
 
+  }
+
+  newItemTransaction() {
+    this.InventoryCustomer = '';
+
+    this.database.collection("Transactions").add({
+      customer: this.InventoryCustomer,
+      donor: this.InventoryDonor,
+      item: this.InventoryName,
+      quantity: this.InventoryQuantity,
+      units: this.InventoryUnits,
+      date: this.InventoryTransferDate
+    }).catch((error) => {
+      console.error("error:", error);
+    })
   }
 
 
