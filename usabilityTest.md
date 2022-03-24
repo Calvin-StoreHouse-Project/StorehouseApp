@@ -32,15 +32,15 @@ Complete the following tasks:
 
 3. Your warehouse just received a new item with the following info.
 
-   Name = Chapstick
-   Donor = Amazon
-   Quantity = 3
-   Units = Boxes
-   Date Received = March 4th, 2022
-   Date Removal = November 2nd, 2022
-   Location = 2a
-   Notes = n/a
-   Flag = not flagged
+   - Name = Chapstick
+   - Donor = Amazon
+   - Quantity = 3
+   - Units = Boxes
+   - Date Received = March 4th, 2022
+   - Date Removal = November 2nd, 2022
+   - Location = 2a
+   - Notes = n/a
+   - Flag = not flagged
 
    Can you find out how to add this item to the database?
 
