@@ -210,9 +210,6 @@ export class CurrentComponent implements OnInit {
 
   updateInventory() {
 
-    console.log(this.addToQuantity);
-    console.log(this.removalQuantity);
-
     // calculate new quantity
     this.InventoryQuantity += parseInt(this.addToQuantity);
     this.InventoryQuantity -= this.removalQuantity;
@@ -245,9 +242,14 @@ export class CurrentComponent implements OnInit {
         let item = doc.data();
         if (item['quantity'] != 0) {
           this.items.push({ doc_id: doc.id, ...item });
+          if(item['name'] == 'Lightbulbs') {
+            console.log(item['quantity']);
+          }
         }
 
       });
+
+      console.log(this.items);
 
       for(let i = 0; i < this.items.length; i++) {
 
@@ -259,6 +261,8 @@ export class CurrentComponent implements OnInit {
           destroyedInField: this.items[i].destroyedInField, id: i, doc_id: this.items[i].doc_id
         }
       }
+
+      console.log(this.InventoryQuantity);
 
       this.tableData = new MatTableDataSource(this.TABLE_DATA);
 

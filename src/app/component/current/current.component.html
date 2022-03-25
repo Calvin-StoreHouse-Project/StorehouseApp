@@ -231,7 +231,7 @@
 </div>
 
 <!-- main add/remove popup -->
-<div class="underlay" *ngIf="!isReadOnlyQuantity"></div>
+<div class="underlay" *ngIf="!isReadOnlyQuantity" (click)="this.isReadOnlyQuantity = true"></div>
 
 <div *ngIf="!isReadOnlyQuantity" class="dialog">
 
@@ -246,7 +246,7 @@
 </div>
 
 <!-- remove item popup -->
-<div class="underlay" *ngIf="removalQuantityPopup"></div>
+<div class="underlay" *ngIf="removalQuantityPopup" (click)="this.removalQuantityPopup = false"></div>
 
 <div *ngIf="removalQuantityPopup" class="dialog">
 
@@ -267,7 +267,7 @@
 </div>
 
 <!-- who is the customer? -->
-<div class="underlay" *ngIf="custPopup"></div>
+<div class="underlay" *ngIf="custPopup" (click)="this.custPopup = false"></div>
 
 <div *ngIf="custPopup" class="dialog">
 
@@ -290,7 +290,7 @@
 
 
 <!-- add item popup -->
-<div class="underlay" *ngIf="addToPopup"></div>
+<div class="underlay" *ngIf="addToPopup" (click)="this.addToPopup = false"></div>
 
 <div *ngIf="addToPopup" class="dialog">
 
