@@ -48,9 +48,19 @@ export class HomeComponent implements OnInit {
       try { this.email = this.authService.user.email; }
       catch(e) { console.log(e); }
     }
+
   }
 
   ngOnInit(): void {
+  }
+
+  handleEnter(event: any) {
+    // document.getElementById("password")?.addEventListener("keyup", function(e) {
+      if(event.keyCode === 13) {
+        console.log("1")
+        document.getElementById("signin")?.click();
+      }
+    // })
   }
 
   async login() {
@@ -59,7 +69,9 @@ export class HomeComponent implements OnInit {
     let password = this.password;
 
     try {
-      const userCredentials = await this.authService.login(email, password);
+      await this.authService.login(email, password).then(() => {
+        this.router.navigate(['/current']);
+      });
       this.email = this.authService.getUser()?.email;
       this.isLoggedInUI = true;
     } catch(error) {

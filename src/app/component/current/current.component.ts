@@ -230,39 +230,49 @@ export class CurrentComponent implements OnInit {
 
     this.openUpdateSnackBar();
 
-    this.items = [];
-    this.TABLE_DATA = [];
+    console.log(this.TABLE_DATA);
 
-    var today = new Date();
-
-    this.database.firestore.collection("Inventory")
-    .get().then((querySnapshot) => {
-      querySnapshot.docs.forEach((doc) => {
-
-        let item = doc.data();
-        if (item['quantity'] != 0) {
-          this.items.push({ doc_id: doc.id, ...item });
-          if(item['name'] == 'Lightbulbs') {
-            console.log(item['quantity']);
-          }
-        }
-
-      });
-
-      console.log(this.items);
-
-      for(let i = 0; i < this.items.length; i++) {
-
-        this.TABLE_DATA[i] = {
-          name: this.items[i].name, flagged: this.items[i].flagged, donor: this.items[i].donor,
-          quantity: this.items[i].quantity, units: this.items[i].units,
-          dateReceived: this.items[i].dateReceived, dateRemoval: this.items[i].dateRemoval,
-          location: this.items[i].location, notes: this.items[i].notes,
-          destroyedInField: this.items[i].destroyedInField, id: i, doc_id: this.items[i].doc_id
-        }
+    for( let i = 0; i < this.TABLE_DATA.length; i++ ) {
+      if (doc_id == this.TABLE_DATA[i].doc_id) {
+        this.TABLE_DATA[i].quantity = this.InventoryQuantity;
       }
+    }
 
-      console.log(this.InventoryQuantity);
+    console.log(this.TABLE_DATA);
+
+    // this.items = [];
+    // this.TABLE_DATA = [];
+
+    // var today = new Date();
+
+    // this.database.firestore.collection("Inventory")
+    // .get().then((querySnapshot) => {
+    //   querySnapshot.docs.forEach((doc) => {
+
+    //     let item = doc.data();
+    //     if (item['quantity'] != 0) {
+    //       this.items.push({ doc_id: doc.id, ...item });
+    //       if(item['name'] == 'Lightbulbs') {
+    //         console.log(item['quantity']);
+    //       }
+    //     }
+
+    //   });
+
+      // console.log(this.items);
+
+      // for(let i = 0; i < this.items.length; i++) {
+
+      //   this.TABLE_DATA[i] = {
+      //     name: this.items[i].name, flagged: this.items[i].flagged, donor: this.items[i].donor,
+      //     quantity: this.items[i].quantity, units: this.items[i].units,
+      //     dateReceived: this.items[i].dateReceived, dateRemoval: this.items[i].dateRemoval,
+      //     location: this.items[i].location, notes: this.items[i].notes,
+      //     destroyedInField: this.items[i].destroyedInField, id: i, doc_id: this.items[i].doc_id
+      //   }
+      // }
+
+      // console.log(this.InventoryQuantity);
 
       this.tableData = new MatTableDataSource(this.TABLE_DATA);
 
@@ -272,10 +282,10 @@ export class CurrentComponent implements OnInit {
       this.addToQuantity = 0;
       this.removalQuantity = 0;
 
-    })
-    .catch((error) => {
-      console.error("error:", error);
-    })
+    // })
+    // .catch((error) => {
+    //   console.error("error:", error);
+    // })
   }
 
   addTransaction() {
@@ -395,7 +405,12 @@ export class CurrentComponent implements OnInit {
   }
 
   addItemToInventory() {
-    console.log(this.InventoryQuantity);
+
+    // ensure notes is not undefined
+    if (this.InventoryNotes === undefined) {
+      this.InventoryNotes = '';
+    }
+
     this.database.collection("Inventory").add({
       name: this.InventoryName,
       donor: this.InventoryDonor,
@@ -408,6 +423,8 @@ export class CurrentComponent implements OnInit {
       notes: this.InventoryNotes,
       destroyedInField: false
     });
+
+    console.log(this.InventoryNotes);
 
     // empty arrays
     this.items = [];
@@ -441,6 +458,7 @@ export class CurrentComponent implements OnInit {
           destroyedInField: this.items[i].destroyedInField, id: i, doc_id: this.items[i].doc_id
         }
       }
+      console.log("3");
 
       this.tableData = new MatTableDataSource(this.TABLE_DATA);
 

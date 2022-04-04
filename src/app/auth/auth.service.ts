@@ -26,6 +26,7 @@ export class AuthService {
 
   async login(email: string, password: string) {
     await this.afAuth.signInWithEmailAndPassword(email, password);
+    this.router.navigate(["/current"]);
   }
 
   async logout(){
