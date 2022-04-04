@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -6,6 +6,7 @@ import { Sort } from '@angular/material/sort';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Router } from '@angular/router';
 import { RedirectSnackBarComponent } from '../redirect-snack-bar/redirect-snack-bar.component';
+import { DOCUMENT } from '@angular/common';
 
 export interface CurrentInventory {
   name: string;
@@ -54,7 +55,7 @@ export class ArchiveComponent implements OnInit {
 
 
   constructor(private database: AngularFirestore, private snackbar: MatSnackBar,
-    private authService: AuthService, private router: Router)
+    private authService: AuthService, private router: Router, @Inject(DOCUMENT) private dom: Document)
     { if(!this.authService.loggedIn) { this.router.navigate(['/home']); this.openRedirectSnackBar() } }
 
 
@@ -146,6 +147,11 @@ export class ArchiveComponent implements OnInit {
     this.snackbar.openFromComponent(RedirectSnackBarComponent, {
       duration: this.durationInSeconds * 1000
     })
+  }
+
+  scrollToTop() {
+    this.dom.body.scrollTop = 0;
+    this.dom.documentElement.scrollTop = 0;
   }
 
 }

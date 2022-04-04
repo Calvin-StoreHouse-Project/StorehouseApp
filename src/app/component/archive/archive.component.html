@@ -1,6 +1,6 @@
 
 
-<div class="header-div">
+<div class="header-div" #topPage>
   <p class="destroyed">* - destroyed in field</p>
   <h1 class="header">Inventory Archive</h1>
   <div class="search-con">
@@ -65,3 +65,7 @@
     </tr>
 
 </table>
+
+<div class="center-scroll-btn">
+    <mat-icon class="arrow-icon" (click)="scrollToTop()">keyboard_arrow_up</mat-icon>
+</div>

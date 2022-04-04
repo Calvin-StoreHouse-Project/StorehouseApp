@@ -9,7 +9,6 @@ import { Sort } from '@angular/material/sort';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Router } from '@angular/router';
 import { RedirectSnackBarComponent } from '../redirect-snack-bar/redirect-snack-bar.component';
-import { throwToolbarMixedModesError } from '@angular/material/toolbar';
 
 export interface CurrentInventory {
   name: string;
@@ -46,8 +45,8 @@ export class CurrentComponent implements OnInit {
   InventoryDonor: string = '';
   InventoryQuantity: number = 0;
   InventoryUnits: string = '';
-  InventoryDateReceived?: Date;
-  InventoryDateRemoval?: Date;
+  InventoryDateReceived?: any;
+  InventoryDateRemoval?: any;
   InventoryLocation: string = '';
   InventoryFlagged: boolean = false;
   InventoryNotes: string = '';
@@ -72,6 +71,8 @@ export class CurrentComponent implements OnInit {
 
   isReadOnly: boolean = true;
   isReadOnlyQuantity: boolean = true;
+
+  unenteredField: boolean = false;
 
   quantityPopup: boolean = false;
   addToPopup: boolean = false;
@@ -187,7 +188,29 @@ export class CurrentComponent implements OnInit {
   saveItemChanges() {
       this.updateInventory();
       this.isReadOnly = true;
-  }
+
+      console.log(this.TABLE_DATA[1].dateReceived);
+      console.log(this.InventoryDateReceived);
+
+      // update table
+      for ( let i = 0; i < this.TABLE_DATA.length; i++ ) {
+        if (this.TABLE_DATA[i].doc_id == this.selectedItem.doc_id) {
+          this.TABLE_DATA[i].name = this.InventoryName;
+          this.TABLE_DATA[i].donor = this.InventoryDonor;
+          this.TABLE_DATA[i].quantity = this.InventoryQuantity;
+          this.TABLE_DATA[i].units = this.InventoryUnits;
+          this.TABLE_DATA[i].dateReceived = this.InventoryDateReceived;
+          this.TABLE_DATA[i].dateRemoval = this.InventoryDateRemoval;
+          this.TABLE_DATA[i].location = this.InventoryLocation;
+          this.TABLE_DATA[i].notes = this.InventoryNotes;
+          this.TABLE_DATA[i].flagged = this.InventoryFlagged;
+          this.TABLE_DATA[i].destroyedInField = this.InventoryDestroyedInField;
+        }
+      }
+
+      this.tableData = new MatTableDataSource(this.TABLE_DATA);
+
+    }
 
   ensureCustomerEntered() {
     if(this.InventoryCustomer != '') {
@@ -397,6 +420,18 @@ export class CurrentComponent implements OnInit {
 
     // open add item card
     this.addItemBool = true;
+  }
+
+  ensureAllFields() {
+    // make sure all fields are filled in
+    if(this.InventoryName == '' || this.InventoryDonor == '' || this.InventoryQuantity == 0 ||
+       this.InventoryUnits == '' || this.InventoryDateReceived == undefined || this.InventoryDateRemoval == undefined ||
+       this.InventoryLocation == '') {
+         this.unenteredField = true;
+      }
+      else {
+        this.newItem();
+      }
   }
 
   newItem() {

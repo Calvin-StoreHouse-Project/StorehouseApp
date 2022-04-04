@@ -119,14 +119,14 @@
           <mat-label>Date Received: </mat-label>
           <input matInput type="text" [(ngModel)]="InventoryDateReceived" [matDatepicker]="RecDate" [readonly]="isReadOnly">
           <mat-datepicker-toggle matSuffix [for]="RecDate"></mat-datepicker-toggle>
-          <mat-datepicker #RecDate></mat-datepicker>
+          <mat-datepicker #RecDate [disabled]="isReadOnly"></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="input-elems">
           <mat-label>Date Removal: </mat-label>
           <input matInput type="text" [(ngModel)]="InventoryDateRemoval" [matDatepicker]="RemDate" [readonly]="isReadOnly">
           <mat-datepicker-toggle matSuffix [for]="RemDate"></mat-datepicker-toggle>
-          <mat-datepicker #RemDate></mat-datepicker>
+          <mat-datepicker #RemDate [disabled]="isReadOnly"></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="input-elems">
@@ -160,41 +160,41 @@
 
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Name: </mat-label>
-            <input matInput type="text" [(ngModel)]="InventoryName">
+            <input matInput type="text" [(ngModel)]="InventoryName" required>
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Donor: </mat-label>
-            <input matInput type="text" [(ngModel)]="InventoryDonor">
+            <input matInput type="text" [(ngModel)]="InventoryDonor" required>
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Quantity: </mat-label>
-            <input matInput type="number" min="0" [(ngModel)]="InventoryQuantity">
+            <input matInput type="number" min="0" [(ngModel)]="InventoryQuantity" required>
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Units: </mat-label>
-            <input matInput type="text" [(ngModel)]="InventoryUnits">
+            <input matInput type="text" [(ngModel)]="InventoryUnits" required>
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Date Received: </mat-label>
-            <input matInput type="text" [(ngModel)]="InventoryDateReceived" [matDatepicker]="RecDate">
+            <input matInput type="text" [(ngModel)]="InventoryDateReceived" [matDatepicker]="RecDate" required>
             <mat-datepicker-toggle matSuffix [for]="RecDate"></mat-datepicker-toggle>
             <mat-datepicker #RecDate></mat-datepicker>
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Date Removal: </mat-label>
-            <input matInput type="text" [(ngModel)]="InventoryDateRemoval" [matDatepicker]="RemDate">
+            <input matInput type="text" [(ngModel)]="InventoryDateRemoval" [matDatepicker]="RemDate" required>
             <mat-datepicker-toggle matSuffix [for]="RemDate"></mat-datepicker-toggle>
             <mat-datepicker #RemDate></mat-datepicker>
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Location: </mat-label>
-            <input matInput type="text" [(ngModel)]="InventoryLocation">
+            <input matInput type="text" [(ngModel)]="InventoryLocation" required>
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="input-elems">
@@ -207,7 +207,7 @@
         </div>
 
       <div class="cen-button-con">
-        <button mat-raised-button (click)="newItem()" class="update-button">Add Item</button>
+        <button mat-raised-button (click)="ensureAllFields()" class="update-button">Add Item</button>
       </div>
 
     </mat-card>
@@ -303,6 +303,21 @@
     </div>
     <div class="dialog-close">
       <button mat-raised-button (click)="finalAdd()" class="ok-btn">Enter</button>
+    </div>
+  </mat-card>
+
+</div>
+
+<!-- add item - field left blank - popup -->
+<div class="underlay" *ngIf="unenteredField" (click)="this.unenteredField = false"></div>
+
+<div *ngIf="unenteredField" class="dialog">
+
+  <mat-card class="dialog-card">
+    <h1 style="text-align: center;">One or more required fields were left blank.</h1>
+    <h2 style="text-align: center;">* indicates required field.</h2>
+    <div class="dialog-close">
+      <button mat-raised-button (click)="unenteredField = false;" class="ok-btn">Ok</button>
     </div>
   </mat-card>
 

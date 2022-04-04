@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 .header-div {
   margin: auto;
   width: 50%;
@@ -13,7 +17,7 @@ table {
   width: 80%;
   border: 1px solid gray;
   margin: auto;
-  margin-bottom: 200px;
+  margin-bottom: 30px;
 }
 
 .edit-button {
@@ -108,4 +112,26 @@ td.mat-cell {
     margin: auto;
     margin-top: 80px;
   }
+}
+
+.center-scroll-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow-icon {
+  font-size: 50px;
+  color: black;
+  pointer-events: all;
+  cursor: pointer;
+  margin-bottom: 50px;
+
+}
+
+.arrow-icon:hover {
+  font-size: 50px;
+  color: gray;
+  pointer-events: all;
+  cursor: pointer;
 }
