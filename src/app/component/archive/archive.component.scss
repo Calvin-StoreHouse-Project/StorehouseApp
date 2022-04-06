@@ -2,10 +2,15 @@ html {
   scroll-behavior: smooth;
 }
 
+.background {
+  background-color: #ebffeb;
+  min-height: 100vh;
+}
+
 .header-div {
   margin: auto;
   width: 50%;
-  margin-top: 30px;
+  padding-top: 30px;
   margin-bottom: 30px;
 }
 

@@ -1,6 +1,12 @@
+.background {
+  min-height: 92.5vh;
+  background-color: #ebffeb;
+
+}
+
 .welcome {
   text-align: center;
-  margin-top: 100px;
+  padding-top: 50px;
 }
 
 .bio {
@@ -8,7 +14,7 @@
 }
 
 .center-login {
-  margin-top: 20px;
+  margin-top: 35px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,14 +23,15 @@
 .login-card {
   margin-top: 20px;
   width: 50%;
+  box-shadow: 0 2px 30px rgb(0 0 0 / 0.2);
 }
 
 .login-btn {
-  // background-color: #70be3c;
+  // background-color: #d4fad5;
 }
 
 .login-btn:hover {
-  // background-color: #94d06c;
+  // background-color: #b3ffb5;
 }
 
 .logout-btn {

@@ -1,32 +1,34 @@
 
 <!-- Home Screen Code -->
-<h1 class="welcome">Welcome to the StoreHouse Inventory Control System</h1>
+<div class="background">
+  <h1 class="welcome">Welcome to the StoreHouse Inventory Control System</h1>
 
-<div class="center-login">
+  <div class="center-login">
 
-  <mat-card class="login-card" *ngIf="!isLoggedInUI">
-    <h1 style="text-align: center">Welcome</h1>
-    <mat-form-field class="cen-cred">
-      <mat-label>Username</mat-label>
-      <input matInput [(ngModel)]="email" required (keypress)="handleEnter($event)">
-      <mat-icon matSuffix (click)="hide = !hide">person</mat-icon>
-    </mat-form-field>
-    <mat-form-field class="cen-cred">
-      <mat-label>Password</mat-label>
-      <input matInput id="password" [type]="hide ? 'password' : 'text'" [(ngModel)]="password" required (keypress)="handleEnter($event)">
-      <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-    </mat-form-field>
-    <p *ngIf="error_message" style="color: red; text-align: center">Credentials not found. Try again.</p>
-    <div class="cen-log-btn">
-      <button mat-raised-button id="signin" class="login-btn" (click)="login()">Sign in</button>
-    </div>
-  </mat-card>
+    <mat-card class="login-card" *ngIf="!isLoggedInUI">
+      <h1 style="text-align: center">Welcome</h1>
+      <mat-form-field class="cen-cred">
+        <mat-label>Username</mat-label>
+        <input matInput [(ngModel)]="email" required (keypress)="handleEnter($event)">
+        <mat-icon matSuffix>person</mat-icon>
+      </mat-form-field>
+      <mat-form-field class="cen-cred">
+        <mat-label>Password</mat-label>
+        <input matInput id="password" [type]="hide ? 'password' : 'text'" [(ngModel)]="password" required (keypress)="handleEnter($event)">
+        <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </mat-form-field>
+      <p *ngIf="error_message" style="color: red; text-align: center">Credentials not found. Try again.</p>
+      <div class="cen-log-btn">
+        <button mat-raised-button id="signin" class="login-btn" (click)="login()">Sign in</button>
+      </div>
+    </mat-card>
 
-  <mat-card class="login-card" *ngIf="isLoggedInUI">
-    <h1 style="text-align: center">Do you wish to log out?</h1>
-    <div class="logout-btn">
-      <button mat-raised-button (click)="logout()">Log Out</button>
-    </div>
-  </mat-card>
+    <mat-card class="login-card" *ngIf="isLoggedInUI">
+      <h1 style="text-align: center">Do you wish to log out?</h1>
+      <div class="logout-btn">
+        <button mat-raised-button (click)="logout()">Log Out</button>
+      </div>
+    </mat-card>
 
+  </div>
 </div>

@@ -115,7 +115,7 @@ export class CurrentComponent implements OnInit {
         this.TABLE_DATA[i] = {
           name: this.items[i].name, flagged: this.items[i].flagged, donor: this.items[i].donor,
           quantity: this.items[i].quantity, units: this.items[i].units,
-          dateReceived: this.items[i].dateReceived, dateRemoval: this.items[i].dateRemoval,
+          dateReceived: this.items[i].dateReceived.toDate(), dateRemoval: this.items[i].dateRemoval.toDate(),
           location: this.items[i].location, notes: this.items[i].notes,
           destroyedInField: this.items[i].destroyedInField, id: i, doc_id: this.items[i].doc_id
         }
@@ -134,13 +134,14 @@ export class CurrentComponent implements OnInit {
     this.selectedItem = row;
     this.oldQuantity = row.quantity
     this.InventoryCustomer = '';
+    this.isReadOnly = true;
 
     this.InventoryName = row.name;
     this.InventoryDonor = row.donor;
     this.InventoryQuantity = parseInt(row.quantity);
     this.InventoryUnits = row.units;
-    this.InventoryDateReceived = row.dateReceived.toDate();
-    this.InventoryDateRemoval = row.dateRemoval.toDate();
+    this.InventoryDateReceived = row.dateReceived;
+    this.InventoryDateRemoval = row.dateRemoval;
     this.InventoryLocation = row.location;
     this.InventoryFlagged = row.flagged;
     this.InventoryNotes = row.notes;
@@ -189,9 +190,6 @@ export class CurrentComponent implements OnInit {
       this.updateInventory();
       this.isReadOnly = true;
 
-      console.log(this.TABLE_DATA[1].dateReceived);
-      console.log(this.InventoryDateReceived);
-
       // update table
       for ( let i = 0; i < this.TABLE_DATA.length; i++ ) {
         if (this.TABLE_DATA[i].doc_id == this.selectedItem.doc_id) {
@@ -199,8 +197,8 @@ export class CurrentComponent implements OnInit {
           this.TABLE_DATA[i].donor = this.InventoryDonor;
           this.TABLE_DATA[i].quantity = this.InventoryQuantity;
           this.TABLE_DATA[i].units = this.InventoryUnits;
-          this.TABLE_DATA[i].dateReceived = this.InventoryDateReceived;
-          this.TABLE_DATA[i].dateRemoval = this.InventoryDateRemoval;
+          this.TABLE_DATA[i].dateReceived = this.InventoryDateReceived.getTime();
+          this.TABLE_DATA[i].dateRemoval = this.InventoryDateRemoval.getTime();
           this.TABLE_DATA[i].location = this.InventoryLocation;
           this.TABLE_DATA[i].notes = this.InventoryNotes;
           this.TABLE_DATA[i].flagged = this.InventoryFlagged;
@@ -488,7 +486,7 @@ export class CurrentComponent implements OnInit {
         this.TABLE_DATA[i] = {
           name: this.items[i].name, flagged: this.items[i].flagged, donor: this.items[i].donor,
           quantity: this.items[i].quantity, units: this.items[i].units,
-          dateReceived: this.items[i].dateReceived, dateRemoval: this.items[i].dateRemoval,
+          dateReceived: this.items[i].dateReceived.toDate(), dateRemoval: this.items[i].dateRemoval.toDate(),
           location: this.items[i].location, notes: this.items[i].notes,
           destroyedInField: this.items[i].destroyedInField, id: i, doc_id: this.items[i].doc_id
         }

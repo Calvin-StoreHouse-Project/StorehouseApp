@@ -1,324 +1,326 @@
-<div class="header-div">
-  <h1 class="header">Current Inventory</h1>
-  <div class="add-btn-con">
-    <button mat-raised-button class="add-btn" (click)="addItem()">Add Item</button>
-  </div>
-  <div class="search-con">
-    <mat-form-field appearance="fill">
-      <mat-label>Search...</mat-label>
-      <input matInput (keyup)="filter($event)">
-    </mat-form-field>
-  </div>
-</div>
-
-<div class="table-wrapper">
-  <table mat-table matSort (matSortChange)="sortData($event)" [dataSource]="tableData">
-
-      <!-- Inventory Name Column -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="name">Name</th>
-        <td mat-cell *matCellDef="let element"> {{element.name}}
-          <p *ngIf="element.destroyedInField" style="display:inline; margin-right: 2px;">*</p>
-          <mat-icon *ngIf="element.flagged" style="font-size: 18px">flag</mat-icon>
-        </td>
-      </ng-container>
-
-      <!-- Inventory Donor Column -->
-      <ng-container matColumnDef="donor">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="donor">Donor</th>
-        <td mat-cell *matCellDef="let element">{{element.donor}} </td>
-      </ng-container>
-
-      <!-- Inventory Quantity Column -->
-      <ng-container matColumnDef="quantity">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="quantity" class="cen-head">Quantity</th>
-        <td mat-cell *matCellDef="let element" class="cen-cell"> {{element.quantity}} </td>
-      </ng-container>
-
-      <!-- Inventory Units Column -->
-      <ng-container matColumnDef="units">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="units">Units</th>
-        <td mat-cell *matCellDef="let element"> {{element.units}} </td>
-      </ng-container>
-
-      <!-- Inventory Date Received Column -->
-      <ng-container matColumnDef="dateReceived">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="dateReceived">Date Received</th>
-        <td mat-cell *matCellDef="let element"> {{element.dateReceived.toDate() | date}} </td>
-      </ng-container>
-
-      <!-- Inventory Date to be Removed Column -->
-      <ng-container matColumnDef="dateTBR">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="dateRemoval">Removal Date</th>
-        <td mat-cell *matCellDef="let element"> {{element.dateRemoval.toDate() | date}} </td>
-      </ng-container>
-
-      <!-- Inventory Location Column -->
-      <ng-container matColumnDef="location">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="location">Location</th>
-        <td mat-cell *matCellDef="let element"> {{element.location}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="edit">
-        <th mat-header-cell *matHeaderCellDef>Edit</th>
-        <td mat-cell *matCellDef="let element"><button type="submit" class="edit-button"><mat-icon>edit</mat-icon></button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-      [ngClass]="{'highlight': selectedRowIndex == row.id}"
-      (click)="clicked(row); addItemBool = false; itemClicked = true; highlight(row)">
-      </tr>
-
-  </table>
-</div>
-
-<p class="destroyed-txt">* - destroyed in field</p>
-
-<!-- to update an item -->
-<div *ngIf="itemClicked" class="card-con">
-  <mat-card class="inventory-card">
-
-    <h1 style="text-align: center;">Update</h1>
-
-    <div class="cen-button-con" *ngIf="isReadOnly">
-      <button mat-raised-button (click)="updateItemInfo()" class="update-button" style="margin-right: 12px">Item Info</button>
-      <button mat-raised-button (click)="updateQuantity()" class="update-button" style="margin-left: 12px">Quantity</button>
-
+<div class="background">
+  <div class="header-div">
+    <h1 class="header">Current Inventory</h1>
+    <div class="add-btn-con">
+      <button mat-raised-button class="add-btn" (click)="addItem()">Add Item</button>
     </div>
-
-    <div class="cen-button-con" *ngIf="!isReadOnly">
-      <button mat-raised-button (click)="isReadOnly = true;" class="back-btn-item">Back</button>
-      <button mat-raised-button (click)="saveItemChanges()" class="save-btn-item">Save</button>
+    <div class="search-con">
+      <mat-form-field appearance="fill">
+        <mat-label>Search...</mat-label>
+        <input matInput (keyup)="filter($event)">
+      </mat-form-field>
     </div>
+  </div>
 
-      <div class="input-con">
+  <div class="table-wrapper">
+    <table mat-table matSort (matSortChange)="sortData($event)" [dataSource]="tableData">
 
-        <mat-form-field appearance="fill" class="input-elems">
-          <mat-label>Name: </mat-label>
-          <input matInput type="text" [(ngModel)]="InventoryName" [readonly]="isReadOnly">
-        </mat-form-field>
+        <!-- Inventory Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="name">Name</th>
+          <td mat-cell *matCellDef="let element"> {{element.name}}
+            <p *ngIf="element.destroyedInField" style="display:inline; margin-right: 2px;">*</p>
+            <mat-icon *ngIf="element.flagged" style="font-size: 18px">flag</mat-icon>
+          </td>
+        </ng-container>
 
-        <mat-form-field appearance="fill" class="input-elems">
-          <mat-label>Donor: </mat-label>
-          <input matInput type="text" [(ngModel)]="InventoryDonor" [readonly]="isReadOnly">
-        </mat-form-field>
+        <!-- Inventory Donor Column -->
+        <ng-container matColumnDef="donor">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="donor">Donor</th>
+          <td mat-cell *matCellDef="let element">{{element.donor}} </td>
+        </ng-container>
 
-        <mat-form-field appearance="fill" class="input-elems">
-          <mat-label>Quantity: </mat-label>
-          <input matInput type="number" min="0" [(ngModel)]="InventoryQuantity" [readonly]="isReadOnlyQuantity">
-        </mat-form-field>
+        <!-- Inventory Quantity Column -->
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="quantity" class="cen-head">Quantity</th>
+          <td mat-cell *matCellDef="let element" class="cen-cell"> {{element.quantity}} </td>
+        </ng-container>
 
-        <mat-form-field appearance="fill" class="input-elems">
-          <mat-label>Units: </mat-label>
-          <input matInput type="text" [(ngModel)]="InventoryUnits" [readonly]="isReadOnly">
-        </mat-form-field>
+        <!-- Inventory Units Column -->
+        <ng-container matColumnDef="units">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="units">Units</th>
+          <td mat-cell *matCellDef="let element"> {{element.units}} </td>
+        </ng-container>
 
-        <mat-form-field appearance="fill" class="input-elems">
-          <mat-label>Date Received: </mat-label>
-          <input matInput type="text" [(ngModel)]="InventoryDateReceived" [matDatepicker]="RecDate" [readonly]="isReadOnly">
-          <mat-datepicker-toggle matSuffix [for]="RecDate"></mat-datepicker-toggle>
-          <mat-datepicker #RecDate [disabled]="isReadOnly"></mat-datepicker>
-        </mat-form-field>
+        <!-- Inventory Date Received Column -->
+        <ng-container matColumnDef="dateReceived">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="dateReceived">Date Received</th>
+          <td mat-cell *matCellDef="let element"> {{element.dateReceived | date:'mediumDate'}} </td>
+        </ng-container>
 
-        <mat-form-field appearance="fill" class="input-elems">
-          <mat-label>Date Removal: </mat-label>
-          <input matInput type="text" [(ngModel)]="InventoryDateRemoval" [matDatepicker]="RemDate" [readonly]="isReadOnly">
-          <mat-datepicker-toggle matSuffix [for]="RemDate"></mat-datepicker-toggle>
-          <mat-datepicker #RemDate [disabled]="isReadOnly"></mat-datepicker>
-        </mat-form-field>
+        <!-- Inventory Date to be Removed Column -->
+        <ng-container matColumnDef="dateTBR">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="dateRemoval">Removal Date</th>
+          <td mat-cell *matCellDef="let element"> {{element.dateRemoval | date:'mediumDate'}} </td>
+        </ng-container>
 
-        <mat-form-field appearance="fill" class="input-elems">
-          <mat-label>Location: </mat-label>
-          <input matInput type="text" [(ngModel)]="InventoryLocation" [readonly]="isReadOnly">
-        </mat-form-field>
+        <!-- Inventory Location Column -->
+        <ng-container matColumnDef="location">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="location">Location</th>
+          <td mat-cell *matCellDef="let element"> {{element.location}} </td>
+        </ng-container>
 
-        <mat-form-field appearance="fill" class="input-elems">
-          <mat-label>Notes: </mat-label>
-          <textarea matInput placeholder="Type here..." [(ngModel)]="InventoryNotes" [readonly]="isReadOnly"></textarea>
-        </mat-form-field>
+        <ng-container matColumnDef="edit">
+          <th mat-header-cell *matHeaderCellDef>Edit</th>
+          <td mat-cell *matCellDef="let element"><button type="submit" class="edit-button"><mat-icon>edit</mat-icon></button>
+          </td>
+        </ng-container>
 
-        <div>
-          <mat-slide-toggle [(ngModel)]="InventoryFlagged" [disabled]="isReadOnly" class="flagged">Flag</mat-slide-toggle>
-          <mat-slide-toggle [(ngModel)]="InventoryDestroyedInField" [disabled]="isReadOnly" class="destroyed">Destroyed In Field</mat-slide-toggle>
-        </div>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+        [ngClass]="{'highlight': selectedRowIndex == row.id}"
+        (click)="clicked(row); addItemBool = false; itemClicked = true; highlight(row)">
+        </tr>
+
+    </table>
+  </div>
+
+  <p class="destroyed-txt">* - destroyed in field</p>
+
+  <!-- to update an item -->
+  <div *ngIf="itemClicked" class="card-con">
+    <mat-card class="inventory-card">
+
+      <h1 style="text-align: center;">Update</h1>
+
+      <div class="cen-button-con" *ngIf="isReadOnly">
+        <button mat-raised-button (click)="updateItemInfo()" class="update-button" style="margin-right: 12px">Item Info</button>
+        <button mat-raised-button (click)="updateQuantity()" class="update-button" style="margin-left: 12px">Quantity</button>
 
       </div>
 
-  </mat-card>
-</div>
-
-
-<!-- to add an item -->
-  <div *ngIf="addItemBool" class="card-con">
-    <mat-card class="inventory-card">
-
-      <h1 style="text-align: center;">Add Item</h1>
+      <div class="cen-button-con" *ngIf="!isReadOnly">
+        <button mat-raised-button (click)="isReadOnly = true;" class="back-btn-item">Back</button>
+        <button mat-raised-button (click)="saveItemChanges()" class="save-btn-item">Save</button>
+      </div>
 
         <div class="input-con">
 
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Name: </mat-label>
-            <input matInput type="text" [(ngModel)]="InventoryName" required>
+            <input matInput type="text" [(ngModel)]="InventoryName" [readonly]="isReadOnly">
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Donor: </mat-label>
-            <input matInput type="text" [(ngModel)]="InventoryDonor" required>
+            <input matInput type="text" [(ngModel)]="InventoryDonor" [readonly]="isReadOnly">
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Quantity: </mat-label>
-            <input matInput type="number" min="0" [(ngModel)]="InventoryQuantity" required>
+            <input matInput type="number" min="0" [(ngModel)]="InventoryQuantity" [readonly]="isReadOnlyQuantity">
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Units: </mat-label>
-            <input matInput type="text" [(ngModel)]="InventoryUnits" required>
+            <input matInput type="text" [(ngModel)]="InventoryUnits" [readonly]="isReadOnly">
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Date Received: </mat-label>
-            <input matInput type="text" [(ngModel)]="InventoryDateReceived" [matDatepicker]="RecDate" required>
+            <input matInput type="text" [(ngModel)]="InventoryDateReceived" [matDatepicker]="RecDate" [readonly]="isReadOnly">
             <mat-datepicker-toggle matSuffix [for]="RecDate"></mat-datepicker-toggle>
-            <mat-datepicker #RecDate></mat-datepicker>
+            <mat-datepicker #RecDate [disabled]="isReadOnly"></mat-datepicker>
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Date Removal: </mat-label>
-            <input matInput type="text" [(ngModel)]="InventoryDateRemoval" [matDatepicker]="RemDate" required>
+            <input matInput type="text" [(ngModel)]="InventoryDateRemoval" [matDatepicker]="RemDate" [readonly]="isReadOnly">
             <mat-datepicker-toggle matSuffix [for]="RemDate"></mat-datepicker-toggle>
-            <mat-datepicker #RemDate></mat-datepicker>
+            <mat-datepicker #RemDate [disabled]="isReadOnly"></mat-datepicker>
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Location: </mat-label>
-            <input matInput type="text" [(ngModel)]="InventoryLocation" required>
+            <input matInput type="text" [(ngModel)]="InventoryLocation" [readonly]="isReadOnly">
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="input-elems">
             <mat-label>Notes: </mat-label>
-            <textarea matInput placeholder="Type here..." [(ngModel)]="InventoryNotes"></textarea>
+            <textarea matInput placeholder="Type here..." [(ngModel)]="InventoryNotes" [readonly]="isReadOnly"></textarea>
           </mat-form-field>
 
-          <mat-slide-toggle [(ngModel)]="InventoryFlagged" class="flagged">Flag</mat-slide-toggle>
+          <div>
+            <mat-slide-toggle [(ngModel)]="InventoryFlagged" [disabled]="isReadOnly" class="flagged">Flag</mat-slide-toggle>
+            <mat-slide-toggle [(ngModel)]="InventoryDestroyedInField" [disabled]="isReadOnly" class="destroyed">Destroyed In Field</mat-slide-toggle>
+          </div>
 
         </div>
 
-      <div class="cen-button-con">
-        <button mat-raised-button (click)="ensureAllFields()" class="update-button">Add Item</button>
-      </div>
+    </mat-card>
+  </div>
 
+
+  <!-- to add an item -->
+    <div *ngIf="addItemBool" class="card-con">
+      <mat-card class="inventory-card">
+
+        <h1 style="text-align: center;">Add Item</h1>
+
+          <div class="input-con">
+
+            <mat-form-field appearance="fill" class="input-elems">
+              <mat-label>Name: </mat-label>
+              <input matInput type="text" [(ngModel)]="InventoryName" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="input-elems">
+              <mat-label>Donor: </mat-label>
+              <input matInput type="text" [(ngModel)]="InventoryDonor" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="input-elems">
+              <mat-label>Quantity: </mat-label>
+              <input matInput type="number" min="0" [(ngModel)]="InventoryQuantity" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="input-elems">
+              <mat-label>Units: </mat-label>
+              <input matInput type="text" [(ngModel)]="InventoryUnits" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="input-elems">
+              <mat-label>Date Received: </mat-label>
+              <input matInput type="text" [(ngModel)]="InventoryDateReceived" [matDatepicker]="RecDate" required>
+              <mat-datepicker-toggle matSuffix [for]="RecDate"></mat-datepicker-toggle>
+              <mat-datepicker #RecDate></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="input-elems">
+              <mat-label>Date Removal: </mat-label>
+              <input matInput type="text" [(ngModel)]="InventoryDateRemoval" [matDatepicker]="RemDate" required>
+              <mat-datepicker-toggle matSuffix [for]="RemDate"></mat-datepicker-toggle>
+              <mat-datepicker #RemDate></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="input-elems">
+              <mat-label>Location: </mat-label>
+              <input matInput type="text" [(ngModel)]="InventoryLocation" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="input-elems">
+              <mat-label>Notes: </mat-label>
+              <textarea matInput placeholder="Type here..." [(ngModel)]="InventoryNotes"></textarea>
+            </mat-form-field>
+
+            <mat-slide-toggle [(ngModel)]="InventoryFlagged" class="flagged">Flag</mat-slide-toggle>
+
+          </div>
+
+        <div class="cen-button-con">
+          <button mat-raised-button (click)="ensureAllFields()" class="update-button">Add Item</button>
+        </div>
+
+      </mat-card>
+
+
+
+  </div>
+
+  <!-- expired item is in current inventory -->
+  <div class="underlay" *ngIf="expired"></div>
+
+  <div *ngIf="expired" class="dialog">
+
+    <mat-card class="dialog-card">
+      <h1 style="text-align: center;">You have an item that is expired and should be removed from the surplus area:</h1>
+      <h2 style="text-align: center;">{{expiredItems}}&nbsp;</h2>
+      <div class="dialog-close"><button mat-raised-button (click)="closeDialog()" class="ok-btn">OK</button></div>
     </mat-card>
 
+  </div>
+
+  <!-- main add/remove popup -->
+  <div class="underlay" *ngIf="!isReadOnlyQuantity" (click)="this.isReadOnlyQuantity = true"></div>
+
+  <div *ngIf="!isReadOnlyQuantity" class="dialog">
+
+    <mat-card class="dialog-card">
+      <h1 style="text-align: center;">Are you adding to or removing from inventory?</h1>
+      <div class="dialog-close">
+        <button mat-raised-button (click)="addToQuantityFunc()" class="ok-btn">Adding</button>
+        <button mat-raised-button (click)="removeFromQuantity()" class="back-btn">Removing</button>
+      </div>
+    </mat-card>
+
+  </div>
+
+  <!-- remove item popup -->
+  <div class="underlay" *ngIf="removalQuantityPopup" (click)="this.removalQuantityPopup = false"></div>
+
+  <div *ngIf="removalQuantityPopup" class="dialog">
+
+    <mat-card class="dialog-card">
+      <h1 style="text-align: center;">How much are you removing?</h1>
+      <div style="display: flex; align-items: center; justify-content: center">
+        <mat-form-field>
+          <mat-label>Quantity:</mat-label>
+          <input matInput type="text" [(ngModel)]="removalQuantity">
+        </mat-form-field>
+      </div>
+      <p style="color: red; text-align: center;">{{quantityConstraintError}}</p>
+      <div class="dialog-close">
+        <button mat-raised-button (click)="checkQuantityConstraint()" class="ok-btn">Enter</button>
+      </div>
+    </mat-card>
+
+  </div>
+
+  <!-- who is the customer? -->
+  <div class="underlay" *ngIf="custPopup" (click)="this.custPopup = false"></div>
+
+  <div *ngIf="custPopup" class="dialog">
+
+    <mat-card class="dialog-card">
+      <h1 style="text-align: center;">Who is receiving this item?</h1>
+      <div style="display: flex; align-items: center; justify-content: center">
+        <mat-form-field>
+          <mat-label>Customer:</mat-label>
+          <input matInput type="text" [(ngModel)]="InventoryCustomer">
+        </mat-form-field>
+      </div>
+      <p style="color: red; text-align: center;">{{custErrorMessage}}</p>
+      <div class="dialog-close">
+        <button mat-raised-button (click)="closeCustPopup()" class="cust-back-btn">Back</button>
+        <button mat-raised-button (click)="ensureCustomerEntered()" class="cust-ok-btn">Enter</button>
+      </div>
+    </mat-card>
+
+  </div>
 
 
-</div>
+  <!-- add item popup -->
+  <div class="underlay" *ngIf="addToPopup" (click)="this.addToPopup = false"></div>
 
-<!-- expired item is in current inventory -->
-<div class="underlay" *ngIf="expired"></div>
+  <div *ngIf="addToPopup" class="dialog">
 
-<div *ngIf="expired" class="dialog">
+    <mat-card class="dialog-card">
+      <h1 style="text-align: center;">How much are you adding?</h1>
+      <div style="display: flex; align-items: center; justify-content: center">
+        <mat-form-field>
+          <mat-label>Quantity:</mat-label>
+          <input matInput type="text" [(ngModel)]="addToQuantity">
+        </mat-form-field>
+      </div>
+      <div class="dialog-close">
+        <button mat-raised-button (click)="finalAdd()" class="ok-btn">Enter</button>
+      </div>
+    </mat-card>
 
-  <mat-card class="dialog-card">
-    <h1 style="text-align: center;">You have an item that is expired and should be removed from the surplus area:</h1>
-    <h2 style="text-align: center;">{{expiredItems}}&nbsp;</h2>
-    <div class="dialog-close"><button mat-raised-button (click)="closeDialog()" class="ok-btn">OK</button></div>
-  </mat-card>
+  </div>
 
-</div>
+  <!-- add item - field left blank - popup -->
+  <div class="underlay" *ngIf="unenteredField" (click)="this.unenteredField = false"></div>
 
-<!-- main add/remove popup -->
-<div class="underlay" *ngIf="!isReadOnlyQuantity" (click)="this.isReadOnlyQuantity = true"></div>
+  <div *ngIf="unenteredField" class="dialog">
 
-<div *ngIf="!isReadOnlyQuantity" class="dialog">
+    <mat-card class="dialog-card">
+      <h1 style="text-align: center;">One or more required fields were left blank.</h1>
+      <h2 style="text-align: center;">* indicates required field.</h2>
+      <div class="dialog-close">
+        <button mat-raised-button (click)="unenteredField = false;" class="ok-btn">Ok</button>
+      </div>
+    </mat-card>
 
-  <mat-card class="dialog-card">
-    <h1 style="text-align: center;">Are you adding to or removing from inventory?</h1>
-    <div class="dialog-close">
-      <button mat-raised-button (click)="addToQuantityFunc()" class="ok-btn">Adding</button>
-      <button mat-raised-button (click)="removeFromQuantity()" class="back-btn">Removing</button>
-    </div>
-  </mat-card>
-
-</div>
-
-<!-- remove item popup -->
-<div class="underlay" *ngIf="removalQuantityPopup" (click)="this.removalQuantityPopup = false"></div>
-
-<div *ngIf="removalQuantityPopup" class="dialog">
-
-  <mat-card class="dialog-card">
-    <h1 style="text-align: center;">How much are you removing?</h1>
-    <div style="display: flex; align-items: center; justify-content: center">
-      <mat-form-field>
-        <mat-label>Quantity:</mat-label>
-        <input matInput type="text" [(ngModel)]="removalQuantity">
-      </mat-form-field>
-    </div>
-    <p style="color: red; text-align: center;">{{quantityConstraintError}}</p>
-    <div class="dialog-close">
-      <button mat-raised-button (click)="checkQuantityConstraint()" class="ok-btn">Enter</button>
-    </div>
-  </mat-card>
-
-</div>
-
-<!-- who is the customer? -->
-<div class="underlay" *ngIf="custPopup" (click)="this.custPopup = false"></div>
-
-<div *ngIf="custPopup" class="dialog">
-
-  <mat-card class="dialog-card">
-    <h1 style="text-align: center;">Who is receiving this item?</h1>
-    <div style="display: flex; align-items: center; justify-content: center">
-      <mat-form-field>
-        <mat-label>Customer:</mat-label>
-        <input matInput type="text" [(ngModel)]="InventoryCustomer">
-      </mat-form-field>
-    </div>
-    <p style="color: red; text-align: center;">{{custErrorMessage}}</p>
-    <div class="dialog-close">
-      <button mat-raised-button (click)="closeCustPopup()" class="cust-back-btn">Back</button>
-      <button mat-raised-button (click)="ensureCustomerEntered()" class="cust-ok-btn">Enter</button>
-    </div>
-  </mat-card>
-
-</div>
-
-
-<!-- add item popup -->
-<div class="underlay" *ngIf="addToPopup" (click)="this.addToPopup = false"></div>
-
-<div *ngIf="addToPopup" class="dialog">
-
-  <mat-card class="dialog-card">
-    <h1 style="text-align: center;">How much are you adding?</h1>
-    <div style="display: flex; align-items: center; justify-content: center">
-      <mat-form-field>
-        <mat-label>Quantity:</mat-label>
-        <input matInput type="text" [(ngModel)]="addToQuantity">
-      </mat-form-field>
-    </div>
-    <div class="dialog-close">
-      <button mat-raised-button (click)="finalAdd()" class="ok-btn">Enter</button>
-    </div>
-  </mat-card>
-
-</div>
-
-<!-- add item - field left blank - popup -->
-<div class="underlay" *ngIf="unenteredField" (click)="this.unenteredField = false"></div>
-
-<div *ngIf="unenteredField" class="dialog">
-
-  <mat-card class="dialog-card">
-    <h1 style="text-align: center;">One or more required fields were left blank.</h1>
-    <h2 style="text-align: center;">* indicates required field.</h2>
-    <div class="dialog-close">
-      <button mat-raised-button (click)="unenteredField = false;" class="ok-btn">Ok</button>
-    </div>
-  </mat-card>
-
+  </div>
 </div>
