@@ -258,7 +258,10 @@
           <input matInput type="text" [(ngModel)]="removalQuantity">
         </mat-form-field>
       </div>
-      <p style="color: red; text-align: center;">{{quantityConstraintError}}</p>
+      <!-- for quantity removal greater than current quantity -->
+      <!-- <p style="color: red; text-align: center;">{{quantityConstraintError}}</p> -->
+      <!-- for quantity greater than zero check -->
+      <p style="color: red; text-align: center;">{{removeErrorMessage}}</p>
       <div class="dialog-close">
         <button mat-raised-button (click)="checkQuantityConstraint()" class="ok-btn">Enter</button>
       </div>
@@ -302,8 +305,12 @@
           <input matInput type="text" [(ngModel)]="addToQuantity">
         </mat-form-field>
       </div>
+      <!-- comment for non-number error message -->
+      <!-- <p style="color: red; text-align: center;">{{notANumber}}</p> -->
+      <!-- comment for negative error message -->
+      <p style="color: red; text-align: center;">{{addErrorMessage}}</p>
       <div class="dialog-close">
-        <button mat-raised-button (click)="finalAdd()" class="ok-btn">Enter</button>
+        <button mat-raised-button (click)="ensureQuantityNotZeroAdd()" class="ok-btn">Enter</button>
       </div>
     </mat-card>
 

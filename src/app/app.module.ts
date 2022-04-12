@@ -31,6 +31,7 @@ import { provideAuth } from '@angular/fire/auth';
 import { getAuth } from 'firebase/auth';
 import { RedirectSnackBarComponent } from './component/redirect-snack-bar/redirect-snack-bar.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { FlexLayoutModule } from "@angular/flex-layout";
 
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -74,7 +75,8 @@ const firebaseConfig = {
     MatDialogModule,
     MatSortModule,
     provideAuth(() => getAuth()),
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    FlexLayoutModule
   ],
   providers: [MatNativeDateModule, AuthService],
   bootstrap: [AppComponent]

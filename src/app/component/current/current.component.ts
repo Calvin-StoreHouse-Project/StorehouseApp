@@ -59,6 +59,8 @@ export class CurrentComponent implements OnInit {
 
   custPopup: boolean = false;
   custErrorMessage: string = '';
+  addErrorMessage: string = '';
+  removeErrorMessage: string = '';
 
   selectedItem: any;
   selectedRowIndex: number = -1;
@@ -162,16 +164,6 @@ export class CurrentComponent implements OnInit {
     this.removalQuantityPopup = true;
   }
 
-  checkQuantityConstraint() {
-
-    if (this.InventoryQuantity < this.removalQuantity) {
-      this.quantityConstraintError = "This amount is greater than the current item quantity. Try again."
-    } else {
-      this.quantityConstraintError = '';
-      this.getCustomer();
-    }
-  }
-
   getCustomer() {
     this.removalQuantityPopup = false;
     this.custPopup = true;
@@ -182,6 +174,11 @@ export class CurrentComponent implements OnInit {
   }
 
   updateQuantity() {
+
+    // remove error messages
+    this.addErrorMessage = '';
+    this.removeErrorMessage = '';
+
     this.isReadOnlyQuantity = false;
     this.quantityPopup = true;
   }
@@ -216,6 +213,42 @@ export class CurrentComponent implements OnInit {
       this.addTransaction();
     } else {
       this.custErrorMessage = "Please Enter a Customer.";
+    }
+  }
+
+  checkQuantityConstraint() {
+
+    this.removeErrorMessage = '';
+
+    // check that quantity is less than current quantity and greater than zero
+    if (isNaN(this.removalQuantity)) {
+      this.removeErrorMessage = "Quantity must be a number. Try Again.";
+    } else {
+      if (this.InventoryQuantity < this.removalQuantity) {
+        this.removeErrorMessage = "This amount is greater than the current item quantity. Try again."
+      } else if (this.removalQuantity <= 0) {
+        this.removeErrorMessage = "Quantity must be greater than zero."
+      } else {
+        this.quantityConstraintError = '';
+        this.getCustomer();
+      }
+    }
+  }
+
+  ensureQuantityNotZeroAdd() {
+
+    this.addErrorMessage = '';
+
+    // check for number
+    if (isNaN(this.addToQuantity)) {
+      this.addErrorMessage = "Quantity must be a number. Try Again."
+    } else {
+      // check for positive number
+      if (this.addToQuantity <= 0) {
+        this.addErrorMessage = "Quantity must be greater than zero.";
+      } else {
+        this.finalAdd();
+      }
     }
   }
 

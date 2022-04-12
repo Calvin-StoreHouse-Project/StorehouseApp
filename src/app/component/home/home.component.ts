@@ -1,23 +1,11 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Router } from '@angular/router';
-import { getAuth, connectAuthEmulator, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { initializeApp } from 'firebase/app';
-import { toBase64String } from '@angular/compiler/src/output/source_map';
-import { windowToggle } from 'rxjs';
-
-// const firebaseApp = initializeApp({
-//   apiKey: "AIzaSyD7Fik7QaBpMfGSuKe-B_o68lPbOXpzTCk",
-//   authDomain: "storehouse-eb19b.firebaseapp.com",
-//   projectId: "storehouse-eb19b",
-//   storageBucket: "storehouse-eb19b.appspot.com",
-//   messagingSenderId: "659342098594",
-//   appId: "1:659342098594:web:f0cacf47c316f601c317fb",
-//   measurementId: "G-YP05SREWH6"
-// });
-
-// const auth = getAuth(firebaseApp);
-// connectAuthEmulator(auth, "http://localhost:9099");
+// import { getAuth, connectAuthEmulator, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+// import { initializeApp } from 'firebase/app';
+// import { toBase64String } from '@angular/compiler/src/output/source_map';
+// import { windowToggle } from 'rxjs';
+import { FlexLayoutModule } from "@angular/flex-layout";
 
 
 @Component({
@@ -36,6 +24,8 @@ export class HomeComponent implements OnInit {
   error_message: boolean = false;
   isLoggedInUI: boolean = false;
 
+  @ViewChild('container') container: ElementRef;
+
   // @Output() formData: EventEmitter<{
   //   email: string;
   //   password: string;
@@ -52,6 +42,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
   }
 
   handleEnter(event: any) {

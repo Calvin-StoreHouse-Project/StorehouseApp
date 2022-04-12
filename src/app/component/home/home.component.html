@@ -1,26 +1,46 @@
 
 <!-- Home Screen Code -->
 <div class="background">
-  <h1 class="welcome">Welcome to the StoreHouse Inventory Control System</h1>
+  <!-- <h1 class="welcome">Welcome to the StoreHouse Inventory Control System</h1> -->
 
   <div class="center-login">
 
     <mat-card class="login-card" *ngIf="!isLoggedInUI">
-      <h1 style="text-align: center">Welcome</h1>
-      <mat-form-field class="cen-cred">
-        <mat-label>Username</mat-label>
-        <input matInput [(ngModel)]="email" required (keypress)="handleEnter($event)">
-        <mat-icon matSuffix>person</mat-icon>
-      </mat-form-field>
-      <mat-form-field class="cen-cred">
-        <mat-label>Password</mat-label>
-        <input matInput id="password" [type]="hide ? 'password' : 'text'" [(ngModel)]="password" required (keypress)="handleEnter($event)">
-        <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-      </mat-form-field>
-      <p *ngIf="error_message" style="color: red; text-align: center">Credentials not found. Try again.</p>
-      <div class="cen-log-btn">
-        <button mat-raised-button id="signin" class="login-btn" (click)="login()">Sign in</button>
+
+      <div fxLayout="row" style="max-height: 100%">
+
+        <div fxFlex="50" class="gray">
+          <div style="width: 100%; margin: auto">
+            <h1 style="text-align:center;">Login for Inventory Control</h1>
+            <h1 style="text-align:center">Or</h1>
+            <h1 style="text-align:center">Volunteer Sign Up Below</h1>
+          </div>
+        </div>
+
+        <div fxFlex="50">
+          <h1 style="text-align: center">Welcome</h1>
+
+          <mat-form-field class="cen-cred">
+            <mat-label>Username</mat-label>
+            <input matInput [(ngModel)]="email" required (keypress)="handleEnter($event)">
+            <mat-icon matSuffix>person</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field class="cen-cred">
+            <mat-label>Password</mat-label>
+            <input matInput id="password" [type]="hide ? 'password' : 'text'" [(ngModel)]="password" required (keypress)="handleEnter($event)">
+            <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </mat-form-field>
+
+          <p *ngIf="error_message" style="color: red; text-align: center">Credentials not found. Try again.</p>
+
+          <div class="cen-log-btn">
+            <button mat-raised-button id="signin" class="login-btn" (click)="login()">Login</button>
+          </div>
+        </div>
+
       </div>
+
     </mat-card>
 
     <mat-card class="login-card" *ngIf="isLoggedInUI">
@@ -31,4 +51,19 @@
     </mat-card>
 
   </div>
+
+  <!-- Calendly inline widget begin -->
+  <div class="calendly-inline-widget" data-url="https://calendly.com/storehousetools/storehouse-volunteer" style="min-width:320px;height:630px;"></div>
+  <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+  <!-- Calendly inline widget end -->
+
+  <!-- <div class="calendly-inline-widget" style="min-width:320px;height:580px;" data-auto-load="false">
+    <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js"></script>
+    <script>
+    Calendly.initInlineWidget({
+    url: "https://calendly.com/storehousetools/storehouse-volunteer?primary_color=ffc4fe"
+    });
+    </script>
+  </div> -->
+
 </div>
