@@ -11,7 +11,7 @@ export class AppComponent {
 
   constructor(private router: Router) {}
 
-  title = 'storehouse2';
+  title = 'StoreHouse Tools';
 
   goToHome() {
     this.router.navigate(['/home']);

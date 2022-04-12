@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 // import { toBase64String } from '@angular/compiler/src/output/source_map';
 // import { windowToggle } from 'rxjs';
 import { FlexLayoutModule } from "@angular/flex-layout";
+export {}; declare global { interface Window { Calendly: any; } } 
 
 
 @Component({
@@ -42,8 +43,11 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
-  }
+  window.Calendly.initInlineWidget({
+    url: 'https://calendly.com/storehousetools/storehouse-volunteer',
+    parentElement: document.querySelector('.calendly-inline-widget'),
+  });
+}
 
   handleEnter(event: any) {
     // document.getElementById("password")?.addEventListener("keyup", function(e) {
