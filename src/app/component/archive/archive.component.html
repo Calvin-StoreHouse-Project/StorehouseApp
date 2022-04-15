@@ -72,3 +72,22 @@
       <mat-icon class="arrow-icon" (click)="scrollToTop()">keyboard_arrow_up</mat-icon>
   </div>
 </div>
+
+
+<!-- expired item is in current inventory -->
+<div class="underlay" *ngIf="QuantityIncreasePopup" (click)="this.QuantityIncreasePopup = false"></div>
+
+<div *ngIf="QuantityIncreasePopup" class="dialog">
+
+  <mat-card class="dialog-card">
+    <h1 style="text-align: center;">How much to increment item quantity?</h1>
+    <div class="center-form">
+      <mat-form-field>
+        <mat-label>Quantity:</mat-label>
+        <input matInput type="text" [(ngModel)]="quantityIncrease">
+      </mat-form-field>
+    </div>
+    <div class="dialog-btn"><button mat-raised-button (click)="increment()" class="ok-btn">OK</button></div>
+  </mat-card>
+
+</div>

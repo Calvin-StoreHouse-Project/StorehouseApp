@@ -9,6 +9,9 @@ import { Sort } from '@angular/material/sort';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Router } from '@angular/router';
 import { RedirectSnackBarComponent } from '../redirect-snack-bar/redirect-snack-bar.component';
+import * as XLSX from 'xlsx';
+import { saveAsExcelFile } from 'file-saver';
+import { saveAs } from 'file-saver';
 
 export interface CurrentInventory {
   name: string;
@@ -34,6 +37,7 @@ export class CurrentComponent implements OnInit {
 
   // variables for table
   items: any[] = [];
+  itemNames: any[] = [];
   expiredItems: any[] = [];
   sortedData: any;
   TABLE_DATA: CurrentInventory[] = [];
@@ -104,6 +108,9 @@ export class CurrentComponent implements OnInit {
         let item = doc.data();
         if (item['quantity'] != 0) {
           this.items.push({ doc_id: doc.id, ...item });
+          this.itemNames.push({
+            "Current Inventory Items": doc.data()["name"]
+          });
         }
         if (item['dateRemoval'].toDate() < today && item['quantity'] > 0) {
           this.expiredItems.push(item['name']);
@@ -552,5 +559,20 @@ export class CurrentComponent implements OnInit {
     })
   }
 
+  // create and download current inventory report
+  // source: https://jsonworld.com/demo/how-to-export-data-to-excel-file-in-angular-application
+  // https://trungk18.com/experience/angular-material-data-table-export-to-excel-file/
+  // https://www.freecodecamp.org/news/how-to-format-dates-in-javascript/
+  downloadReport() {
+
+    let today = new Date().toLocaleDateString('en-us', { year:'numeric', month:'short', day:'numeric' });
+    let fileName = "current_inventory_" + today + ".xlsx";
+
+    var workbook = XLSX.utils.book_new();
+    var worksheet = XLSX.utils.json_to_sheet(this.itemNames);
+    XLSX.utils.book_append_sheet(workbook, worksheet, "current_inventory");
+    XLSX.writeFile(workbook, fileName);
+
+  }
 
 }

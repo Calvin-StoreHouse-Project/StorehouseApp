@@ -4,7 +4,7 @@ import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Sort } from '@angular/material/sort';
 import { AuthService } from 'src/app/auth/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLinkWithHref } from '@angular/router';
 import { RedirectSnackBarComponent } from '../redirect-snack-bar/redirect-snack-bar.component';
 import { DOCUMENT } from '@angular/common';
 
@@ -45,11 +45,15 @@ export class ArchiveComponent implements OnInit {
   InventoryLocation: string = '';
   InventoryFlagged: boolean = false;
   InventoryDestroyedInField: boolean = false;
+  doc_id: string = '';
+  id: number = -1;
 
   selectedItem: any;
   selectedRowIndex: number = -1;
 
   itemClicked: boolean = false;
+  QuantityIncreasePopup: boolean = false;
+  quantityIncrease: number = 0;
 
   durationInSeconds: number = 3;
 
@@ -91,8 +95,11 @@ export class ArchiveComponent implements OnInit {
 
   // executed on table row click
   clicked(row) {
-    this.selectedItem = row;
 
+    // reset increment quantity
+    this.quantityIncrease = 0;
+
+    this.selectedItem = row;
     this.InventoryName = row.name;
     this.InventoryDonor = row.donor;
     this.InventoryQuantity = row.quantity;
@@ -102,6 +109,24 @@ export class ArchiveComponent implements OnInit {
     this.InventoryLocation = row.location;
     this.InventoryFlagged = row.flagged;
     this.InventoryDestroyedInField = row.destroyedInField;
+    this.doc_id = row.doc_id;
+    this.QuantityIncreasePopup = true;
+  }
+
+  increment() {
+    this.QuantityIncreasePopup = false;
+
+    // calculate new quantity
+    let newQuantity = parseFloat(this.InventoryQuantity.toString()) + parseFloat(this.quantityIncrease.toString());
+
+    // update table
+    console.log(this.TABLE_DATA);
+    this.TABLE_DATA[this.selectedItem.id].quantity = newQuantity;
+
+    // update database
+    this.database.collection("Inventory").doc(this.doc_id)
+    .update({quantity: newQuantity});
+
   }
 
   highlight(row) {
