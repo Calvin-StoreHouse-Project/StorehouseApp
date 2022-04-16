@@ -12,6 +12,8 @@
         <mat-label>Search...</mat-label>
         <input matInput (keyup)="filter($event)">
       </mat-form-field>
+      <input type="button" value="Generate Transaction Report" class="btn btn-success" (click)="createReport('transaction')">  
+      <input type="button" value="Generate Summary Report" class="btn btn-success" (click)="createReport('summary')">  
     </div>
   </div>
 
