@@ -11,7 +11,6 @@ import { Router } from '@angular/router';
 import { RedirectSnackBarComponent } from '../redirect-snack-bar/redirect-snack-bar.component';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { BLACK_ON_WHITE_CSS_CLASS } from '@angular/cdk/a11y/high-contrast-mode/high-contrast-mode-detector';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 export interface CurrentInventory {
@@ -54,7 +53,6 @@ export class CurrentComponent implements OnInit {
   tableData = new MatTableDataSource(this.TABLE_DATA);
   displayedColumns: string[] = ['name', 'donor', 'quantity', 'units', 'dateReceived', 'dateTBR', 'location'];
   months: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  itemQuantities: any[] = [{item: 0}, {donor: 0}, {customer: 0}, {quantity: 0}, {units: 0}, {date: 0}]
 
   // variable for inventory items
   InventoryName: string = '';
@@ -598,11 +596,14 @@ export class CurrentComponent implements OnInit {
   }
 
   async generatePdf(timePeriod, type){
+    var text = "Transactions"
     if(type == 'transaction'){
       await this.generateReport(timePeriod);
+      text = 'Recent Transactions';
     }
     else if (type == 'summary'){
       await this.generateSummaryReport(timePeriod);
+      text = 'Transaction Summary By Item';
     }
     this.TABLE_DATA2.sort(this.objectComparisonCallback);
     console.log(this.TABLE_DATA2);
@@ -610,7 +611,7 @@ export class CurrentComponent implements OnInit {
       content: [  
         // Previous configuration  
         {
-              text: 'Recent Transactions',
+              text: text,
               bold: true,
               fontSize: 20,
               alignment: 'center',
