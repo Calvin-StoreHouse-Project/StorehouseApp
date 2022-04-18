@@ -6,6 +6,7 @@
     <h1 class="header">Current Inventory</h1>
     <div class="add-btn-con">
       <button mat-raised-button class="add-btn" (click)="addItem()">Add Item</button>
+      <button mat-raised-button class="report-btn" (click)="whichReport()">Report</button>
     </div>
     <div class="search-con">
       <mat-form-field appearance="fill">
@@ -94,7 +95,7 @@
 
       <div class="cen-button-con" *ngIf="!isReadOnly">
         <button mat-raised-button (click)="isReadOnly = true;" class="back-btn-item">Back</button>
-        <button mat-raised-button (click)="saveItemChanges()" class="save-btn-item">Save</button>
+        <button mat-raised-button (click)="checkDatesSaved()" class="save-btn-item">Save</button>
       </div>
 
         <div class="input-con">
@@ -333,4 +334,36 @@
     </mat-card>
 
   </div>
+
+  <!-- which report - popup -->
+  <div class="underlay" *ngIf="whichReportPopup" (click)="this.whichReportPopup = false"></div>
+
+  <div *ngIf="whichReportPopup" class="dialog">
+
+    <mat-card class="dialog-card">
+      <h1 style="text-align: center;">Which report would you like?</h1>
+      <div class="dialog-close">
+        <button mat-raised-button class="current-btn" (click)="downloadReport()">Current</button>
+        <button mat-raised-button class="trans-btn" (click)="createReport('transaction')">Transactions</button>
+        <button mat-raised-button class="summary-btn" (click)="createReport('summary')">Summary</button>
+      </div>
+    </mat-card>
+
+  </div>
+
+    <!-- bad dates - popup -->
+    <div class="underlay" *ngIf="badDatesPopup" (click)="this.badDatesPopup = false"></div>
+
+    <div *ngIf="badDatesPopup" class="dialog">
+
+      <mat-card class="dialog-card">
+        <h1 style="text-align: center;">Your removal date must be before date received. Try again. </h1>
+        <div class="dialog-close">
+          <button mat-raised-button class="current-btn" (click)="this.badDatesPopup = false">Ok</button>
+        </div>
+      </mat-card>
+
+    </div>
+
+
 </div>

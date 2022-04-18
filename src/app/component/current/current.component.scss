@@ -105,6 +105,44 @@ td.cen-elem {
   background-color: #f5f5f5;
 }
 
+.report-btn {
+  background-color: #ffffff;
+  margin-left: 20px;
+}
+
+.report-btn:hover {
+  background-color: #f5f5f5;
+  margin-left: 20px;
+}
+
+.current-btn {
+  background-color: #ebffeb;
+}
+
+.current-btn:hover {
+  background-color: #dcffdb;
+}
+
+.trans-btn {
+  background-color: #ebffeb;
+  margin-left: 20px;
+}
+
+.trans-btn:hover {
+  background-color: #dcffdb;
+  margin-left: 20px;
+}
+
+.summary-btn {
+  background-color: #ebffeb;
+  margin-left: 20px;
+}
+
+.summary-btn:hover {
+  background-color: #dcffdb;
+  margin-left: 20px;
+}
+
 .update-button {
   background-color: #ebffeb;
 }
@@ -147,7 +185,7 @@ td.cen-elem {
 }
 
 .dialog {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   margin-right: -50%;

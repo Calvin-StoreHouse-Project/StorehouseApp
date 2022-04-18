@@ -25,6 +25,38 @@ table {
   margin-bottom: 30px;
 }
 
+.underlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  opacity: 0.6;
+  z-index: 10;
+  background-color: gray;
+}
+
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+}
+
+.dialog-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.center-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .edit-button {
   width: 39px;
   border-radius: 8px;
@@ -104,6 +136,14 @@ td.mat-cell {
 
 .flagged {
   margin-top: 22px;
+}
+
+.ok-btn {
+  background-color: #ebffeb;
+}
+
+.ok-btn:hover {
+  background-color: #dcffdb;
 }
 
 @media screen and (max-width: 780px) {
