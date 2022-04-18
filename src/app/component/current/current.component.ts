@@ -287,7 +287,7 @@ export class CurrentComponent implements OnInit {
   updateInventory() {
 
     // calculate new quantity
-    this.InventoryQuantity += parseInt(this.addToQuantity);
+    this.InventoryQuantity += parseFloat(this.addToQuantity);
     this.InventoryQuantity -= this.removalQuantity;
 
     let doc_id = this.selectedItem.doc_id;
