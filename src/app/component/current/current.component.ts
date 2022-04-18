@@ -101,6 +101,8 @@ export class CurrentComponent implements OnInit {
   addToQuantity: any = 0;
   removalQuantity: number = 0;
 
+  badDatesPopup: boolean = false;
+
   whichReportPopup: boolean = false;
 
   quantityConstraintError: string = '';
@@ -203,6 +205,14 @@ export class CurrentComponent implements OnInit {
 
     this.isReadOnlyQuantity = false;
     this.quantityPopup = true;
+  }
+
+  checkDatesSaved() {
+    if(this.InventoryDateReceived > this.InventoryDateRemoval) {
+      this.badDatesPopup = true;
+    } else {
+      this.saveItemChanges();
+    }
   }
 
   saveItemChanges() {
@@ -491,8 +501,17 @@ export class CurrentComponent implements OnInit {
          this.unenteredField = true;
       }
       else {
-        this.newItem();
+        this.checkDates();
       }
+  }
+
+  // make sure removal date is after date received
+  checkDates() {
+    if(this.InventoryDateReceived > this.InventoryDateRemoval) {
+      this.badDatesPopup = true;
+    } else {
+      this.newItem();
+    }
   }
 
   newItem() {

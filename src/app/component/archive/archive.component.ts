@@ -7,6 +7,8 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { Router, RouterLinkWithHref } from '@angular/router';
 import { RedirectSnackBarComponent } from '../redirect-snack-bar/redirect-snack-bar.component';
 import { DOCUMENT } from '@angular/common';
+import { UpdateSnackBarComponent } from '../update-snack-bar/update-snack-bar.component';
+
 
 export interface CurrentInventory {
   name: string;
@@ -118,6 +120,7 @@ export class ArchiveComponent implements OnInit {
     // reset
     this.quantityIncrease = 0;
     this.quantityErrorMessage = '';
+    this.dateErrorMsg = '';
 
     this.selectedItem = row;
     this.InventoryName = row.name;
@@ -160,7 +163,11 @@ export class ArchiveComponent implements OnInit {
     if (this.newRemovalDate == null) {
       this.dateErrorMsg = "Please choose a date.";
     } else {
-      this.increment();
+      if (this.newRemovalDate < this.InventoryDateReceived) {
+        this.dateErrorMsg = "Removal Date must be before date received."
+      } else {
+        this.increment();
+      }
     }
   }
 
@@ -196,8 +203,16 @@ export class ArchiveComponent implements OnInit {
       date: today
     }).catch((error) => {
       console.error("error:", error);
+    }).then(() => {
+      this.openUpdateSnackBar();
     })
 
+  }
+
+  openUpdateSnackBar() {
+    this.snackbar.openFromComponent(UpdateSnackBarComponent, {
+      duration: this.durationInSeconds * 1000
+    })
   }
 
   highlight(row) {
