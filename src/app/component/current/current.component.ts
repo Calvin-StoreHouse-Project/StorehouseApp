@@ -232,7 +232,7 @@ export class CurrentComponent implements OnInit {
   ensureCustomerEntered() {
     if(this.InventoryCustomer != '') {
       this.updateInventory();
-      this.addTransaction();
+      this.addTransactionRemove();
     } else {
       this.custErrorMessage = "Please Enter a Customer.";
     }
@@ -276,12 +276,12 @@ export class CurrentComponent implements OnInit {
 
   finalAdd() {
     this.updateInventory();
-    this.addTransaction();
+    this.addTransactionAdd();
   }
 
   finalRemoval() {
     this.updateInventory();
-    this.addTransaction();
+    this.addTransactionRemove();
   }
 
   updateInventory() {
@@ -360,7 +360,7 @@ export class CurrentComponent implements OnInit {
     // })
   }
 
-  addTransaction() {
+  addTransactionAdd() {
 
     // calculate quantity
     let quantityChange = this.InventoryQuantity - this.oldQuantity
@@ -382,14 +382,25 @@ export class CurrentComponent implements OnInit {
 
   }
 
-  // customerPopup() {
-  //   let quantityChange = this.oldQuantity - this.InventoryQuantity;
-  //   if(quantityChange > 0) {
-  //     this.custPopup = true;
-  //   } else {
-  //     this.updateInventory();
-  //   }
-  // }
+  addTransactionRemove() {
+
+    // calculate quantity
+    let quantityChange = this.InventoryQuantity - this.oldQuantity
+    this.InventoryTransferDate = new Date();
+
+    // ADD CUSTOMER POPUP
+    this.database.collection("Transactions").add({
+      customer: this.InventoryCustomer,
+      donor: this.InventoryDonor,
+      item: this.InventoryName,
+      quantity: quantityChange,
+      units: this.InventoryUnits,
+      date: this.InventoryTransferDate
+    });
+
+    this.oldQuantity = this.InventoryQuantity;
+
+  }
 
   closeCustPopup() {
     this.custPopup = false;
@@ -469,6 +480,7 @@ export class CurrentComponent implements OnInit {
 
     // open add item card
     this.addItemBool = true;
+
   }
 
   ensureAllFields() {

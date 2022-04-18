@@ -191,7 +191,7 @@ export class ArchiveComponent implements OnInit {
       customer: '',
       donor: this.InventoryDonor,
       item: this.InventoryName,
-      quantity: this.InventoryQuantity,
+      quantity: newQuantity,
       units: this.InventoryUnits,
       date: today
     }).catch((error) => {
