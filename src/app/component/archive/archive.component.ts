@@ -57,6 +57,8 @@ export class ArchiveComponent implements OnInit {
 
   durationInSeconds: number = 3;
 
+  quantityErrorMessage: string = '';
+
 
   constructor(private database: AngularFirestore, private snackbar: MatSnackBar,
     private authService: AuthService, private router: Router, @Inject(DOCUMENT) private dom: Document)
@@ -96,8 +98,9 @@ export class ArchiveComponent implements OnInit {
   // executed on table row click
   clicked(row) {
 
-    // reset increment quantity
+    // reset
     this.quantityIncrease = 0;
+    this.quantityErrorMessage = '';
 
     this.selectedItem = row;
     this.InventoryName = row.name;
@@ -113,6 +116,21 @@ export class ArchiveComponent implements OnInit {
     this.QuantityIncreasePopup = true;
   }
 
+  // ensure quantity is legitimate
+  checkQuantity() {
+
+    if (isNaN(this.quantityIncrease)) {
+      this.quantityErrorMessage = "Quantity must be a number. Try Again.";
+    } else {
+      if (this.quantityIncrease <= 0) {
+        this.quantityErrorMessage = "Quantity must be greater than zero."
+      } else {
+        this.quantityErrorMessage = '';
+        this.increment();
+      }
+    }
+  }
+
   increment() {
     this.QuantityIncreasePopup = false;
 
@@ -123,9 +141,23 @@ export class ArchiveComponent implements OnInit {
     console.log(this.TABLE_DATA);
     this.TABLE_DATA[this.selectedItem.id].quantity = newQuantity;
 
-    // update database
+    // update inventory collection
     this.database.collection("Inventory").doc(this.doc_id)
     .update({quantity: newQuantity});
+
+    let today = new Date()
+
+    // add transaction to transaction collection
+    this.database.collection("Transactions").add({
+      customer: '',
+      donor: this.InventoryDonor,
+      item: this.InventoryName,
+      quantity: this.InventoryQuantity,
+      units: this.InventoryUnits,
+      date: today
+    }).catch((error) => {
+      console.error("error:", error);
+    })
 
   }
 

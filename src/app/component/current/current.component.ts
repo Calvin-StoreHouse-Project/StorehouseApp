@@ -147,7 +147,7 @@ export class CurrentComponent implements OnInit {
 
     this.InventoryName = row.name;
     this.InventoryDonor = row.donor;
-    this.InventoryQuantity = parseInt(row.quantity);
+    this.InventoryQuantity = parseFloat(row.quantity);
     this.InventoryUnits = row.units;
     this.InventoryDateReceived = row.dateReceived;
     this.InventoryDateRemoval = row.dateRemoval;
@@ -291,15 +291,11 @@ export class CurrentComponent implements OnInit {
 
     this.openUpdateSnackBar();
 
-    console.log(this.TABLE_DATA);
-
     for( let i = 0; i < this.TABLE_DATA.length; i++ ) {
       if (doc_id == this.TABLE_DATA[i].doc_id) {
         this.TABLE_DATA[i].quantity = this.InventoryQuantity;
       }
     }
-
-    console.log(this.TABLE_DATA);
 
     // this.items = [];
     // this.TABLE_DATA = [];

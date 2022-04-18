@@ -87,7 +87,8 @@
         <input matInput type="text" [(ngModel)]="quantityIncrease">
       </mat-form-field>
     </div>
-    <div class="dialog-btn"><button mat-raised-button (click)="increment()" class="ok-btn">OK</button></div>
+    <p style="color: red; text-align: center;">{{quantityErrorMessage}}</p>
+    <div class="dialog-btn"><button mat-raised-button (click)="checkQuantity()" class="ok-btn">OK</button></div>
   </mat-card>
 
 </div>
