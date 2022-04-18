@@ -14,7 +14,8 @@
 }
 
 .center-login {
-  padding-top: 40px;
+  padding-top: 20px;
+  padding-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -22,7 +23,7 @@
 
 .login-card {
   margin-top: 20px;
-  width: 70%;
+  width: 80%;
   // min-height: 30vh;
   box-shadow: 0 2px 30px rgb(0 0 0 / 0.2);
 }
@@ -57,6 +58,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: auto;
 }
 
 .cen-log-btn {
