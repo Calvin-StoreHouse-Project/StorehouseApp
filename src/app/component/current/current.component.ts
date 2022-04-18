@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UpdateSnackBarComponent } from '../update-snack-bar/update-snack-bar.component';
@@ -12,6 +12,9 @@ import { RedirectSnackBarComponent } from '../redirect-snack-bar/redirect-snack-
 import * as XLSX from 'xlsx';
 import { saveAsExcelFile } from 'file-saver';
 import { saveAs } from 'file-saver';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 export interface CurrentInventory {
   name: string;
@@ -27,6 +30,14 @@ export interface CurrentInventory {
   id: number;
   doc_id: string;
 }
+export interface RecentTransactions {
+  item: any;
+  donor: string;
+  quantity: number;
+  units: string;
+  customer: string;
+  date: any;
+}
 
 @Component({
   selector: 'app-current',
@@ -39,10 +50,13 @@ export class CurrentComponent implements OnInit {
   items: any[] = [];
   itemNames: any[] = [];
   expiredItems: any[] = [];
+  reportingItems: any[] = [];
   sortedData: any;
   TABLE_DATA: CurrentInventory[] = [];
+  TABLE_DATA2: RecentTransactions[] = [];
   tableData = new MatTableDataSource(this.TABLE_DATA);
   displayedColumns: string[] = ['name', 'donor', 'quantity', 'units', 'dateReceived', 'dateTBR', 'location'];
+  months: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   // variable for inventory items
   InventoryName: string = '';
@@ -87,6 +101,8 @@ export class CurrentComponent implements OnInit {
   addToQuantity: any = 0;
   removalQuantity: number = 0;
 
+  whichReportPopup: boolean = false;
+
   quantityConstraintError: string = '';
 
   constructor(private database: AngularFirestore, private snackbar: MatSnackBar,
@@ -97,7 +113,6 @@ export class CurrentComponent implements OnInit {
 
   // executed on page load
   ngOnInit(): void {
-
     // get today's date
     var today = new Date();
 
@@ -555,6 +570,10 @@ export class CurrentComponent implements OnInit {
     })
   }
 
+  whichReport() {
+    this.whichReportPopup = true;
+  }
+
   // create and download current inventory report
   // source: https://jsonworld.com/demo/how-to-export-data-to-excel-file-in-angular-application
   // https://trungk18.com/experience/angular-material-data-table-export-to-excel-file/
@@ -570,5 +589,189 @@ export class CurrentComponent implements OnInit {
     XLSX.writeFile(workbook, fileName);
 
   }
+
+
+  async generateReport(timePeriod){
+    var today = new Date();
+    var lastDate = new Date();
+    lastDate.setDate(today.getDate() - timePeriod);
+
+    await this.database.firestore.collection("Transactions")
+    .get().then((querySnapshot) => {
+      querySnapshot.docs.forEach((doc) => {
+
+        let item = doc.data();
+        if (item['date'].toDate() > lastDate) {
+          this.reportingItems.push({ doc_id: doc.id, ...item });
+        }
+      });
+    }
+
+    )
+    .catch((error) => {
+      console.error("error:", error);
+    })
+
+    for(let i = 0; i < this.reportingItems.length; i++) {
+      this.TABLE_DATA2[i] = {
+        item: this.reportingItems[i].item,
+        quantity: this.reportingItems[i].quantity,
+        donor: this.reportingItems[i].donor,
+        units: this.reportingItems[i].units,
+        customer: this.reportingItems[i].customer,
+        date: this.reportingItems[i].date.toDate(),
+      }
+    }
+
+  }
+
+  createReport(type){
+    var tempInput = prompt("Enter number of days to view", "0");
+    if (tempInput !==null){
+      this.generatePdf(parseInt(tempInput), type);
+    }
+  }
+
+  async generatePdf(timePeriod, type){
+
+    var text = "Transactions"
+    if(type == 'transaction'){
+      await this.generateReport(timePeriod);
+      text = 'Recent Transactions';
+    }
+    else if (type == 'summary'){
+      await this.generateSummaryReport(timePeriod);
+      text = 'Transaction Summary By Item';
+    }
+    this.TABLE_DATA2.sort(this.objectComparisonCallback);
+    console.log(this.TABLE_DATA2);
+    const documentDefinition = {
+      content: [
+        // Previous configuration
+        {
+              text: text,
+              bold: true,
+              fontSize: 20,
+              alignment: 'center',
+              margin: [0, 0, 0, 20]
+            },
+        {
+            table: {
+                headerRows: 1,
+                widths: ['20%', '20%', '20%', '7%', '13%', '20%'],
+                // widths: ['20%', '20%', '20%', '20%', '20%'],
+                body: [
+                    [ {text: 'Item', style: 'header'},
+                      {text: 'Donor', style: 'header'},
+                      {text: 'Customer', style: 'header'},
+                      {text: 'Qty', style: 'header'},
+                      {text: 'Units', style: 'header'},
+                      {text: 'Date', style: 'header'}],
+                    ...this.TABLE_DATA2.map(p => ([
+                      {text: p.item, alignment: 'left'},
+                      {text: p.donor, alignment: 'left'},
+                      {text: p.customer, alignment: 'left'},
+                      {text: p.quantity, alignment: 'center'},
+                      {text: p.units, alignment: 'center'},
+                      {text: this.months[p.date.getMonth()] + " " + p.date.getDate() + ", " + p.date.getFullYear(),
+                          alignment: 'center'}])),
+                  ]
+            }
+        }
+      ],
+      styles: {
+        header: {
+          fontSize: 16,
+          bold: true,
+          alignment: 'center'
+        }
+      }
+    };
+
+    if (this.reportingItems.length > 0){
+      pdfMake.createPdf(documentDefinition).open();
+      this.reportingItems = [];
+      this.TABLE_DATA2 = [];
+    }
+
+  }
+
+
+  async generateSummaryReport(timePeriod){
+    var today = new Date();
+    var lastDate = new Date();
+    lastDate.setDate(today.getDate() - timePeriod);
+
+    await this.database.firestore.collection("Transactions")
+    .get().then((querySnapshot) => {
+      querySnapshot.docs.forEach((doc) => {
+
+        let item = doc.data();
+        if (item['date'].toDate() > lastDate) {
+          if (!this.reportingItems.find(el => el.item.toString() == item['item'])){
+            this.reportingItems.push({ doc_id: doc.id, ...item });
+          }
+          else{
+            for (var i=0; i < this.reportingItems.length; i++) {
+
+              if (this.reportingItems[i].item == item['item']){
+                this.reportingItems[i].quantity += item['quantity'];
+              }
+            }
+          }
+        }
+      });
+    }
+
+    )
+    .catch((error) => {
+      console.error("error:", error);
+    })
+
+    for(let i = 0; i < this.reportingItems.length; i++) {
+      this.TABLE_DATA2[i] = {
+        item: this.reportingItems[i].item,
+        quantity: this.reportingItems[i].quantity,
+        donor: this.reportingItems[i].donor,
+        units: this.reportingItems[i].units,
+        customer: this.reportingItems[i].customer,
+        date: this.reportingItems[i].date.toDate(),
+      }
+    }
+
+  }
+
+
+  compareDates = (arrayItemA, arrayItemB) => {
+    if (arrayItemA.date > arrayItemB.date) {
+      return -1
+    }
+    if (arrayItemA.date < arrayItemB.date) {
+      return 1
+    }
+    return 0
+  }
+
+
+  compareItems = (arrayItemA, arrayItemB) => {
+    if (arrayItemA.item > arrayItemB.item) {
+      return -1
+    }
+    if (arrayItemA.item < arrayItemB.item) {
+      return 1
+    }
+    return 0
+  }
+
+
+  objectComparisonCallback = (arrayItemA, arrayItemB) => {
+    // first sort by date
+    const priceOutcome = this.compareDates(arrayItemA, arrayItemB)
+    if (priceOutcome !== 0) {
+      return priceOutcome
+    }
+    return this.compareItems(arrayItemA, arrayItemB);
+  }
+
 
 }

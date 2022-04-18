@@ -21,6 +21,14 @@ export interface CurrentInventory {
   id: number;
   doc_id: string;
 }
+export interface RecentTransactions {
+  item: any;
+  donor: string;
+  quantity: number;
+  units: string;
+  customer: string;
+  date: any;
+}
 
 @Component({
   selector: 'app-archive',
@@ -31,17 +39,20 @@ export class ArchiveComponent implements OnInit {
 
   // variables for table
   items: any[] = [];
+  reportingItems: any[] = [];
   TABLE_DATA: CurrentInventory[] = [];
+  TABLE_DATA2: RecentTransactions[] = [];
   tableData = new MatTableDataSource(this.TABLE_DATA);
   displayedColumns: string[] = ['name', 'donor', 'quantity', 'units', 'dateReceived', 'dateTBR', 'location'];
+  months: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   // variable for inventory items
   InventoryName: string = '';
   InventoryDonor: string = '';
   InventoryQuantity: number = 0;
   InventoryUnits: string = '';
-  InventoryDateReceived?: Date;
-  InventoryDateRemoval?: Date;
+  InventoryDateReceived?: any;
+  InventoryDateRemoval?: any;
   InventoryLocation: string = '';
   InventoryFlagged: boolean = false;
   InventoryDestroyedInField: boolean = false;
@@ -54,6 +65,12 @@ export class ArchiveComponent implements OnInit {
   itemClicked: boolean = false;
   QuantityIncreasePopup: boolean = false;
   quantityIncrease: number = 0;
+
+  dateUpdatePopup: boolean = false;
+  newRemovalDate?: any;
+  dateErrorMsg: string = '';
+
+  directionPopup: boolean = false;
 
   durationInSeconds: number = 3;
 
@@ -81,7 +98,7 @@ export class ArchiveComponent implements OnInit {
         this.TABLE_DATA[i] = {
           name: this.items[i].name, flagged: this.items[i].flagged, donor: this.items[i].donor,
           quantity: this.items[i].quantity, units: this.items[i].units,
-          dateReceived: this.items[i].dateReceived, dateRemoval: this.items[i].dateRemoval,
+          dateReceived: this.items[i].dateReceived.toDate(), dateRemoval: this.items[i].dateRemoval.toDate(),
           location: this.items[i].location, destroyedInField: this.items[i].destroyedInField,
           id: i, doc_id: this.items[i].doc_id
         }
@@ -107,13 +124,18 @@ export class ArchiveComponent implements OnInit {
     this.InventoryDonor = row.donor;
     this.InventoryQuantity = row.quantity;
     this.InventoryUnits = row.units;
-    this.InventoryDateReceived = row.dateReceived.toDate();
-    this.InventoryDateRemoval = row.dateRemoval.toDate();
+    this.InventoryDateReceived = row.dateReceived;
+    this.InventoryDateRemoval = row.dateRemoval;
     this.InventoryLocation = row.location;
     this.InventoryFlagged = row.flagged;
     this.InventoryDestroyedInField = row.destroyedInField;
     this.doc_id = row.doc_id;
-    this.QuantityIncreasePopup = true;
+
+    if (row.quantity > 0) {
+      this.directionPopup = true;
+    } else {
+      this.QuantityIncreasePopup = true;
+    }
   }
 
   // ensure quantity is legitimate
@@ -126,13 +148,26 @@ export class ArchiveComponent implements OnInit {
         this.quantityErrorMessage = "Quantity must be greater than zero."
       } else {
         this.quantityErrorMessage = '';
-        this.increment();
+        this.QuantityIncreasePopup = false;
+        this.dateUpdatePopup = true;
       }
     }
   }
 
+  // ensure date is legitimate
+  checkDate() {
+
+    if (this.newRemovalDate == null) {
+      this.dateErrorMsg = "Please choose a date.";
+    } else {
+      this.increment();
+    }
+  }
+
   increment() {
-    this.QuantityIncreasePopup = false;
+    this.dateUpdatePopup = false;
+
+    let today = new Date()
 
     // calculate new quantity
     let newQuantity = parseFloat(this.InventoryQuantity.toString()) + parseFloat(this.quantityIncrease.toString());
@@ -140,12 +175,16 @@ export class ArchiveComponent implements OnInit {
     // update table
     console.log(this.TABLE_DATA);
     this.TABLE_DATA[this.selectedItem.id].quantity = newQuantity;
+    this.TABLE_DATA[this.selectedItem.id].dateReceived = today;
+    this.TABLE_DATA[this.selectedItem.id].dateRemoval = this.newRemovalDate.getTime();
+
 
     // update inventory collection
     this.database.collection("Inventory").doc(this.doc_id)
-    .update({quantity: newQuantity});
-
-    let today = new Date()
+    .update({
+      quantity: newQuantity,
+      dateReceived: today
+    });
 
     // add transaction to transaction collection
     this.database.collection("Transactions").add({

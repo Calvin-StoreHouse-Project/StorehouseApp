@@ -45,13 +45,13 @@
       <!-- Inventory Date Received Column -->
       <ng-container matColumnDef="dateReceived">
         <th mat-header-cell *matHeaderCellDef mat-sort-header="dateReceived">Date Received</th>
-        <td mat-cell *matCellDef="let element"> {{element.dateReceived.toDate() | date}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.dateReceived | date:'mediumDate'}} </td>
       </ng-container>
 
       <!-- Inventory Date to be Removed Column -->
       <ng-container matColumnDef="dateTBR">
         <th mat-header-cell *matHeaderCellDef mat-sort-header="dateRemoval">Removal Date</th>
-        <td mat-cell *matCellDef="let element"> {{element.dateRemoval.toDate() | date}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.dateRemoval | date:'mediumDate'}} </td>
       </ng-container>
 
       <!-- Inventory Location Column -->
@@ -74,7 +74,7 @@
 </div>
 
 
-<!-- expired item is in current inventory -->
+<!-- item quantity increase popup -->
 <div class="underlay" *ngIf="QuantityIncreasePopup" (click)="this.QuantityIncreasePopup = false"></div>
 
 <div *ngIf="QuantityIncreasePopup" class="dialog">
@@ -88,7 +88,41 @@
       </mat-form-field>
     </div>
     <p style="color: red; text-align: center;">{{quantityErrorMessage}}</p>
-    <div class="dialog-btn"><button mat-raised-button (click)="checkQuantity()" class="ok-btn">OK</button></div>
+    <div class="dialog-btn"><button mat-raised-button (click)="checkQuantity()" class="ok-btn">Submit</button></div>
+  </mat-card>
+
+</div>
+
+<!-- item date removal update popup -->
+<div class="underlay" *ngIf="dateUpdatePopup" (click)="this.dateUpdatePopup = false"></div>
+
+<div *ngIf="dateUpdatePopup" class="dialog">
+
+  <mat-card class="dialog-card">
+    <h1 style="text-align: center;">When is the date of expiration?</h1>
+    <div class="center-form">
+      <mat-form-field>
+        <mat-label>Date Received: </mat-label>
+        <input matInput type="text" [(ngModel)]="newRemovalDate" [matDatepicker]="RemDate" required>
+        <mat-datepicker-toggle matSuffix [for]="RemDate"></mat-datepicker-toggle>
+        <mat-datepicker #RemDate></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <p style="color: red; text-align: center;">{{dateErrorMsg}}</p>
+    <div class="dialog-btn"><button mat-raised-button (click)="checkDate()" class="ok-btn">Submit</button></div>
+  </mat-card>
+
+</div>
+
+
+<!-- error message  -->
+<div class="underlay" *ngIf="directionPopup" (click)="this.directionPopup = false"></div>
+
+<div *ngIf="directionPopup" class="dialog">
+
+  <mat-card class="dialog-card">
+    <h1 style="text-align: center;">This item is in current inventory. Update quantity on 'Current' page.</h1>
+    <div class="dialog-btn"><button mat-raised-button (click)="this.directionPopup = false" class="ok-btn">OK</button></div>
   </mat-card>
 
 </div>
