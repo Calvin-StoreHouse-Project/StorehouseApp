@@ -5,13 +5,21 @@
 
 .header-div {
   margin: auto;
-  width: 50%;
-  padding-top: 30px;
-  margin-bottom: 30px;
+  width: 100%;
+  height: 100%;
+  padding-top: 20px;
+  margin-bottom: 20px;
 }
 
 .header {
   text-align: center;
+}
+
+.button-div {
+  width: 79%;
+  align-self: center;
+  align-items: baseline;
+  margin-right: 20px;
 }
 
 table {
@@ -124,15 +132,14 @@ td.cen-elem {
 }
 
 .add-btn-con {
-  position: absolute;
-  left: 10vw;
-  top: 110px;
+  width: max-content;
+  height: max-content;
 }
 
 .search-con {
-  position: absolute;
-  right: 10vw;
-  top: 95px;
+  width: max-content;
+  height: max-content;
+  justify-items: end;
 }
 
 .underlay {
