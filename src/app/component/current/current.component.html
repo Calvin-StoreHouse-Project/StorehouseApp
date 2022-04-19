@@ -2,17 +2,18 @@
   <title>Surplus - Current Inventory</title>
 </head>
 <div class="background">
-  <div class="header-div">
-    <h1 class="header">Current Inventory</h1>
-    <div class="add-btn-con">
-      <button mat-raised-button class="add-btn" (click)="addItem()">Add Item</button>
-      <button mat-raised-button class="report-btn" (click)="whichReport()">Report</button>
-    </div>
-    <div class="search-con">
-      <mat-form-field appearance="fill">
-        <mat-label>Search...</mat-label>
-        <input matInput (keyup)="filter($event)">
-      </mat-form-field>
+  <div class="header-div" fxLayout="column">
+    <h1 class="header" fxFlex="70">Current Inventory</h1>
+    <div class="button-div" fxFlex="30">
+      <div class="add-btn-con" fxFlex="auto">
+        <button mat-raised-button class="add-btn" (click)="addItem()">Add Item</button>
+      </div>
+      <span fxFlex="auto"></span>
+      <div class="search-con" fxFlex="25">
+        <mat-form-field appearance="fill" style="font-size: 14px; width: 100%;">
+          <mat-label style="justify-items: end;">Search...</mat-label>
+          <input matInput (keyup)="filter($event)">
+        </mat-form-field>
     </div>
   </div>
 

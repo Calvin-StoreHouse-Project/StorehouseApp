@@ -32,6 +32,9 @@ import { getAuth } from 'firebase/auth';
 import { RedirectSnackBarComponent } from './component/redirect-snack-bar/redirect-snack-bar.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FlexLayoutModule } from "@angular/flex-layout";
+import { ResponsiveToolbarComponent } from './responsive-toolbar/responsive-toolbar.component';
+import { MatMenuModule } from '@angular/material/menu';
+import {MatDividerModule} from '@angular/material/divider';
 
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -54,7 +57,8 @@ const firebaseConfig = {
     HomeComponent,
     UpdateSnackBarComponent,
     AddSnackBarComponent,
-    RedirectSnackBarComponent
+    RedirectSnackBarComponent,
+    ResponsiveToolbarComponent
   ],
   imports: [
     BrowserModule,
@@ -76,7 +80,9 @@ const firebaseConfig = {
     MatSortModule,
     provideAuth(() => getAuth()),
     MatSlideToggleModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    MatMenuModule,
+    MatDividerModule,
   ],
   providers: [MatNativeDateModule, AuthService],
   bootstrap: [AppComponent]
