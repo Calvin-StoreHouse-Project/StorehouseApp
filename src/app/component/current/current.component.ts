@@ -109,7 +109,7 @@ export class CurrentComponent implements OnInit {
 
   constructor(private database: AngularFirestore, private snackbar: MatSnackBar,
     public dialog: MatDialog, private authService: AuthService, private router: Router) {
-      if(!this.authService.loggedIn) { this.router.navigate(['/home']); this.openRedirectSnackBar(); }
+      if(!this.authService.loggedIn) { this.router.navigate(['/home']); }
     }
 
 
