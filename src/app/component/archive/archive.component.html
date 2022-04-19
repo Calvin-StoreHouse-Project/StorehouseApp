@@ -2,7 +2,18 @@
   <title>Surplus - Inventory Archive</title>
 </head>
 <div class="background">
-  <div class="header-div" #topPage>
+  <div class="header-div" fxLayout="column">
+    <h1 class="header" fxFlex="70">Inventory Archive</h1>
+    <div class="button-div" fxFlex="auto">
+      <p fxFlex="auto">* - destroyed in field</p>
+      <div class="search-con" fxFlex="35">
+        <mat-form-field appearance="fill" style="font-size: 14px; width: 100%;">
+          <mat-label>Search...</mat-label>
+          <input matInput (keyup)="filter($event)">
+        </mat-form-field>
+      </div>
+    </div>
+  <!-- <div class="header-div" #topPage>
     <p class="destroyed">* - destroyed in field</p>
     <h1 class="header">Inventory Archive</h1>
     <div class="search-con">
@@ -11,9 +22,9 @@
         <input matInput (keyup)="filter($event)">
       </mat-form-field>
     </div>
-  </div>
-
-  <table mat-table matSort (matSortChange)="sortData($event)" [dataSource]="tableData">
+  </div> -->
+  <div class="table-wrapper">
+    <table mat-table matSort (matSortChange)="sortData($event)" [dataSource]="tableData">
 
       <!-- Inventory Name Column -->
       <ng-container matColumnDef="name">
@@ -66,7 +77,8 @@
       (click)="clicked(row); itemClicked = true; highlight(row)">
       </tr>
 
-  </table>
+    </table>
+  </div>
 
   <div class="center-scroll-btn">
       <mat-icon class="arrow-icon" (click)="scrollToTop()">keyboard_arrow_up</mat-icon>

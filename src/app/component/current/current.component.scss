@@ -16,10 +16,9 @@
 }
 
 .button-div {
-  width: 79%;
+  width: 80%;
   align-self: center;
   align-items: baseline;
-  margin-right: 20px;
 }
 
 table {
@@ -170,14 +169,12 @@ td.cen-elem {
 }
 
 .add-btn-con {
-  width: max-content;
   height: max-content;
 }
 
 .search-con {
-  width: max-content;
   height: max-content;
-  justify-items: end;
+  text-align: end;
 }
 
 .underlay {
@@ -274,15 +271,15 @@ td.cen-elem {
   margin-left: 11vw;
 }
 
-@media screen and (max-width: 780px) {
-  .search-con {
-    margin-top: 50px;
-  }
+// @media screen and (max-width: 780px) {
+//   .search-con {
+//     margin-top: 50px;
+//   }
 
-  table {
-    width: 80%;
-    border: 1px solid gray;
-    margin: auto;
-    margin-top: 80px;
-  }
-}
+//   table {
+//     width: 80%;
+//     border: 1px solid gray;
+//     margin: auto;
+//     margin-top: 80px;
+//   }
+// }
