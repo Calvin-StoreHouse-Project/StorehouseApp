@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UpdateSnackBarComponent } from '../update-snack-bar/update-snack-bar.component';
@@ -9,6 +9,12 @@ import { Sort } from '@angular/material/sort';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Router } from '@angular/router';
 import { RedirectSnackBarComponent } from '../redirect-snack-bar/redirect-snack-bar.component';
+import * as XLSX from 'xlsx';
+import { saveAsExcelFile } from 'file-saver';
+import { saveAs } from 'file-saver';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 export interface CurrentInventory {
   name: string;
@@ -24,6 +30,14 @@ export interface CurrentInventory {
   id: number;
   doc_id: string;
 }
+export interface RecentTransactions {
+  item: any;
+  donor: string;
+  quantity: number;
+  units: string;
+  customer: string;
+  date: any;
+}
 
 @Component({
   selector: 'app-current',
@@ -34,11 +48,15 @@ export class CurrentComponent implements OnInit {
 
   // variables for table
   items: any[] = [];
+  itemNames: any[] = [];
   expiredItems: any[] = [];
+  reportingItems: any[] = [];
   sortedData: any;
   TABLE_DATA: CurrentInventory[] = [];
+  TABLE_DATA2: RecentTransactions[] = [];
   tableData = new MatTableDataSource(this.TABLE_DATA);
   displayedColumns: string[] = ['name', 'donor', 'quantity', 'units', 'dateReceived', 'dateTBR', 'location'];
+  months: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   // variable for inventory items
   InventoryName: string = '';
@@ -83,6 +101,10 @@ export class CurrentComponent implements OnInit {
   addToQuantity: any = 0;
   removalQuantity: number = 0;
 
+  badDatesPopup: boolean = false;
+
+  whichReportPopup: boolean = false;
+
   quantityConstraintError: string = '';
 
   constructor(private database: AngularFirestore, private snackbar: MatSnackBar,
@@ -93,7 +115,6 @@ export class CurrentComponent implements OnInit {
 
   // executed on page load
   ngOnInit(): void {
-
     // get today's date
     var today = new Date();
 
@@ -104,6 +125,9 @@ export class CurrentComponent implements OnInit {
         let item = doc.data();
         if (item['quantity'] != 0) {
           this.items.push({ doc_id: doc.id, ...item });
+          this.itemNames.push({
+            "Current Inventory Items": doc.data()["name"]
+          });
         }
         if (item['dateRemoval'].toDate() < today && item['quantity'] > 0) {
           this.expiredItems.push(item['name']);
@@ -140,7 +164,7 @@ export class CurrentComponent implements OnInit {
 
     this.InventoryName = row.name;
     this.InventoryDonor = row.donor;
-    this.InventoryQuantity = parseInt(row.quantity);
+    this.InventoryQuantity = parseFloat(row.quantity);
     this.InventoryUnits = row.units;
     this.InventoryDateReceived = row.dateReceived;
     this.InventoryDateRemoval = row.dateRemoval;
@@ -183,6 +207,14 @@ export class CurrentComponent implements OnInit {
     this.quantityPopup = true;
   }
 
+  checkDatesSaved() {
+    if(this.InventoryDateReceived > this.InventoryDateRemoval) {
+      this.badDatesPopup = true;
+    } else {
+      this.saveItemChanges();
+    }
+  }
+
   saveItemChanges() {
       this.updateInventory();
       this.isReadOnly = true;
@@ -210,7 +242,7 @@ export class CurrentComponent implements OnInit {
   ensureCustomerEntered() {
     if(this.InventoryCustomer != '') {
       this.updateInventory();
-      this.addTransaction();
+      this.addTransactionRemove();
     } else {
       this.custErrorMessage = "Please Enter a Customer.";
     }
@@ -254,18 +286,18 @@ export class CurrentComponent implements OnInit {
 
   finalAdd() {
     this.updateInventory();
-    this.addTransaction();
+    this.addTransactionAdd();
   }
 
   finalRemoval() {
     this.updateInventory();
-    this.addTransaction();
+    this.addTransactionRemove();
   }
 
   updateInventory() {
 
     // calculate new quantity
-    this.InventoryQuantity += parseInt(this.addToQuantity);
+    this.InventoryQuantity += parseFloat(this.addToQuantity);
     this.InventoryQuantity -= this.removalQuantity;
 
     let doc_id = this.selectedItem.doc_id;
@@ -284,15 +316,11 @@ export class CurrentComponent implements OnInit {
 
     this.openUpdateSnackBar();
 
-    console.log(this.TABLE_DATA);
-
     for( let i = 0; i < this.TABLE_DATA.length; i++ ) {
       if (doc_id == this.TABLE_DATA[i].doc_id) {
         this.TABLE_DATA[i].quantity = this.InventoryQuantity;
       }
     }
-
-    console.log(this.TABLE_DATA);
 
     // this.items = [];
     // this.TABLE_DATA = [];
@@ -342,7 +370,7 @@ export class CurrentComponent implements OnInit {
     // })
   }
 
-  addTransaction() {
+  addTransactionAdd() {
 
     // calculate quantity
     let quantityChange = this.InventoryQuantity - this.oldQuantity
@@ -364,14 +392,25 @@ export class CurrentComponent implements OnInit {
 
   }
 
-  // customerPopup() {
-  //   let quantityChange = this.oldQuantity - this.InventoryQuantity;
-  //   if(quantityChange > 0) {
-  //     this.custPopup = true;
-  //   } else {
-  //     this.updateInventory();
-  //   }
-  // }
+  addTransactionRemove() {
+
+    // calculate quantity
+    let quantityChange = this.InventoryQuantity - this.oldQuantity
+    this.InventoryTransferDate = new Date();
+
+    // ADD CUSTOMER POPUP
+    this.database.collection("Transactions").add({
+      customer: this.InventoryCustomer,
+      donor: this.InventoryDonor,
+      item: this.InventoryName,
+      quantity: quantityChange,
+      units: this.InventoryUnits,
+      date: this.InventoryTransferDate
+    });
+
+    this.oldQuantity = this.InventoryQuantity;
+
+  }
 
   closeCustPopup() {
     this.custPopup = false;
@@ -451,6 +490,7 @@ export class CurrentComponent implements OnInit {
 
     // open add item card
     this.addItemBool = true;
+
   }
 
   ensureAllFields() {
@@ -461,8 +501,17 @@ export class CurrentComponent implements OnInit {
          this.unenteredField = true;
       }
       else {
-        this.newItem();
+        this.checkDates();
       }
+  }
+
+  // make sure removal date is after date received
+  checkDates() {
+    if(this.InventoryDateReceived > this.InventoryDateRemoval) {
+      this.badDatesPopup = true;
+    } else {
+      this.newItem();
+    }
   }
 
   newItem() {
@@ -550,6 +599,209 @@ export class CurrentComponent implements OnInit {
     }).catch((error) => {
       console.error("error:", error);
     })
+  }
+
+  whichReport() {
+    this.whichReportPopup = true;
+  }
+
+  // create and download current inventory report
+  // source: https://jsonworld.com/demo/how-to-export-data-to-excel-file-in-angular-application
+  // https://trungk18.com/experience/angular-material-data-table-export-to-excel-file/
+  // https://www.freecodecamp.org/news/how-to-format-dates-in-javascript/
+  downloadReport() {
+
+    let today = new Date().toLocaleDateString('en-us', { year:'numeric', month:'short', day:'numeric' });
+    let fileName = "current_inventory_" + today + ".xlsx";
+
+    var workbook = XLSX.utils.book_new();
+    var worksheet = XLSX.utils.json_to_sheet(this.itemNames);
+    XLSX.utils.book_append_sheet(workbook, worksheet, "current_inventory");
+    XLSX.writeFile(workbook, fileName);
+
+  }
+
+
+  async generateReport(timePeriod){
+    var today = new Date();
+    var lastDate = new Date();
+    lastDate.setDate(today.getDate() - timePeriod);
+
+    await this.database.firestore.collection("Transactions")
+    .get().then((querySnapshot) => {
+      querySnapshot.docs.forEach((doc) => {
+
+        let item = doc.data();
+        if (item['date'].toDate() > lastDate) {
+          this.reportingItems.push({ doc_id: doc.id, ...item });
+        }
+      });
+    }
+
+    )
+    .catch((error) => {
+      console.error("error:", error);
+    })
+
+    for(let i = 0; i < this.reportingItems.length; i++) {
+      this.TABLE_DATA2[i] = {
+        item: this.reportingItems[i].item,
+        quantity: this.reportingItems[i].quantity,
+        donor: this.reportingItems[i].donor,
+        units: this.reportingItems[i].units,
+        customer: this.reportingItems[i].customer,
+        date: this.reportingItems[i].date.toDate(),
+      }
+    }
+
+  }
+
+  createReport(type){
+    var tempInput = prompt("Enter number of days to view", "0");
+    if (tempInput !==null){
+      this.generatePdf(parseInt(tempInput), type);
+    }
+  }
+
+  async generatePdf(timePeriod, type){
+
+    var text = "Transactions"
+    if(type == 'transaction'){
+      await this.generateReport(timePeriod);
+      text = 'Recent Transactions';
+    }
+    else if (type == 'summary'){
+      await this.generateSummaryReport(timePeriod);
+      text = 'Transaction Summary By Item';
+    }
+    this.TABLE_DATA2.sort(this.objectComparisonCallback);
+    console.log(this.TABLE_DATA2);
+    const documentDefinition = {
+      content: [
+        // Previous configuration
+        {
+              text: text,
+              bold: true,
+              fontSize: 20,
+              alignment: 'center',
+              margin: [0, 0, 0, 20]
+            },
+        {
+            table: {
+                headerRows: 1,
+                widths: ['20%', '20%', '20%', '7%', '13%', '20%'],
+                // widths: ['20%', '20%', '20%', '20%', '20%'],
+                body: [
+                    [ {text: 'Item', style: 'header'},
+                      {text: 'Donor', style: 'header'},
+                      {text: 'Customer', style: 'header'},
+                      {text: 'Qty', style: 'header'},
+                      {text: 'Units', style: 'header'},
+                      {text: 'Date', style: 'header'}],
+                    ...this.TABLE_DATA2.map(p => ([
+                      {text: p.item, alignment: 'left'},
+                      {text: p.donor, alignment: 'left'},
+                      {text: p.customer, alignment: 'left'},
+                      {text: p.quantity, alignment: 'center'},
+                      {text: p.units, alignment: 'center'},
+                      {text: this.months[p.date.getMonth()] + " " + p.date.getDate() + ", " + p.date.getFullYear(),
+                          alignment: 'center'}])),
+                  ]
+            }
+        }
+      ],
+      styles: {
+        header: {
+          fontSize: 16,
+          bold: true,
+          alignment: 'center'
+        }
+      }
+    };
+
+    if (this.reportingItems.length > 0){
+      pdfMake.createPdf(documentDefinition).open();
+      this.reportingItems = [];
+      this.TABLE_DATA2 = [];
+    }
+
+  }
+
+
+  async generateSummaryReport(timePeriod){
+    var today = new Date();
+    var lastDate = new Date();
+    lastDate.setDate(today.getDate() - timePeriod);
+
+    await this.database.firestore.collection("Transactions")
+    .get().then((querySnapshot) => {
+      querySnapshot.docs.forEach((doc) => {
+
+        let item = doc.data();
+        if (item['date'].toDate() > lastDate) {
+          if (!this.reportingItems.find(el => el.item.toString() == item['item'])){
+            this.reportingItems.push({ doc_id: doc.id, ...item });
+          }
+          else{
+            for (var i=0; i < this.reportingItems.length; i++) {
+
+              if (this.reportingItems[i].item == item['item']){
+                this.reportingItems[i].quantity += item['quantity'];
+              }
+            }
+          }
+        }
+      });
+    }
+
+    )
+    .catch((error) => {
+      console.error("error:", error);
+    })
+
+    for(let i = 0; i < this.reportingItems.length; i++) {
+      this.TABLE_DATA2[i] = {
+        item: this.reportingItems[i].item,
+        quantity: this.reportingItems[i].quantity,
+        donor: this.reportingItems[i].donor,
+        units: this.reportingItems[i].units,
+        customer: this.reportingItems[i].customer,
+        date: this.reportingItems[i].date.toDate(),
+      }
+    }
+
+  }
+
+
+  compareDates = (arrayItemA, arrayItemB) => {
+    if (arrayItemA.date > arrayItemB.date) {
+      return -1
+    }
+    if (arrayItemA.date < arrayItemB.date) {
+      return 1
+    }
+    return 0
+  }
+
+
+  compareItems = (arrayItemA, arrayItemB) => {
+    if (arrayItemA.item > arrayItemB.item) {
+      return -1
+    }
+    if (arrayItemA.item < arrayItemB.item) {
+      return 1
+    }
+    return 0
+  }
+
+
+  objectComparisonCallback = (arrayItemA, arrayItemB) => {
+    // first sort by date
+    const priceOutcome = this.compareDates(arrayItemA, arrayItemB)
+    if (priceOutcome !== 0) {
+      return priceOutcome
+    }
+    return this.compareItems(arrayItemA, arrayItemB);
   }
 
 
