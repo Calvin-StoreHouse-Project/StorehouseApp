@@ -22,7 +22,7 @@ export class AuthService {
     })
   }
 
-  // source: https://www.techiediaries.com/angular-firebase/angular-9-firebase-authentication-email-google-and-password/
+  // https://www.techiediaries.com/angular-firebase/angular-9-firebase-authentication-email-google-and-password/
 
   async login(email: string, password: string) {
     await this.afAuth.signInWithEmailAndPassword(email, password);

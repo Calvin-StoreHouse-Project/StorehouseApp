@@ -190,7 +190,8 @@ export class ArchiveComponent implements OnInit {
     this.database.collection("Inventory").doc(this.doc_id)
     .update({
       quantity: newQuantity,
-      dateReceived: today
+      dateReceived: today,
+      dateRemoval: this.newRemovalDate
     });
 
     // add transaction to transaction collection
