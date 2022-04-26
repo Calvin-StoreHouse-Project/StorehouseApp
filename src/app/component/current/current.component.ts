@@ -597,13 +597,15 @@ export class CurrentComponent implements OnInit {
   newItemTransaction() {
     this.InventoryCustomer = '';
 
+    let today = new Date()
+
     this.database.collection("Transactions").add({
       customer: this.InventoryCustomer,
       donor: this.InventoryDonor,
       item: this.InventoryName,
       quantity: this.InventoryQuantity,
       units: this.InventoryUnits,
-      date: this.InventoryTransferDate
+      date: today
     }).catch((error) => {
       console.error("error:", error);
     })
