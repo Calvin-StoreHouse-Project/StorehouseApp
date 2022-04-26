@@ -14,6 +14,7 @@ import { saveAsExcelFile } from 'file-saver';
 import { saveAs } from 'file-saver';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import {ExcelConverter} from 'pdfmake-to-excel';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 export interface CurrentInventory {
@@ -33,9 +34,15 @@ export interface CurrentInventory {
 export interface RecentTransactions {
   item: any;
   donor: string;
-  quantity: number;
+  quantityChange: number;
   units: string;
   customer: string;
+  date: any;
+}
+export interface RecentTransactions2 {
+  item: any;
+  quantityChange: number;
+  units: string;
   date: any;
 }
 
@@ -54,6 +61,7 @@ export class CurrentComponent implements OnInit {
   sortedData: any;
   TABLE_DATA: CurrentInventory[] = [];
   TABLE_DATA2: RecentTransactions[] = [];
+  TABLE_DATA3: RecentTransactions2[] = [];
   tableData = new MatTableDataSource(this.TABLE_DATA);
   displayedColumns: string[] = ['name', 'donor', 'quantity', 'units', 'dateReceived', 'dateTBR', 'location'];
   months: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -621,8 +629,26 @@ export class CurrentComponent implements OnInit {
 
   }
 
+  downloadReport2(documentinfo, type) {
 
-  async generateReport(timePeriod){
+    let today = new Date().toLocaleDateString('en-us', { year:'numeric', month:'short', day:'numeric' });
+    let fileName = "transaction_report_" + today + ".xlsx";
+    if (type == 'transaction'){
+      fileName = "transaction_report_" + today + ".xlsx";
+    }
+    else if (type == 'summary'){
+      fileName = "summary_transaction_report_" + today + ".xlsx";
+    }
+
+    var workbook = XLSX.utils.book_new();
+    var worksheet = XLSX.utils.json_to_sheet(documentinfo);
+    XLSX.utils.book_append_sheet(workbook, worksheet, "current_inventory");
+    XLSX.writeFile(workbook, fileName);
+
+  }
+
+
+  async generateReport(timePeriod, type){
     var today = new Date();
     var lastDate = new Date();
     lastDate.setDate(today.getDate() - timePeriod);
@@ -642,18 +668,28 @@ export class CurrentComponent implements OnInit {
     .catch((error) => {
       console.error("error:", error);
     })
-
-    for(let i = 0; i < this.reportingItems.length; i++) {
-      this.TABLE_DATA2[i] = {
-        item: this.reportingItems[i].item,
-        quantity: this.reportingItems[i].quantity,
-        donor: this.reportingItems[i].donor,
-        units: this.reportingItems[i].units,
-        customer: this.reportingItems[i].customer,
-        date: this.reportingItems[i].date.toDate(),
+    if (type == 'transaction'){
+      for(let i = 0; i < this.reportingItems.length; i++) {
+        this.TABLE_DATA2[i] = {
+          item: this.reportingItems[i].item,
+          quantityChange: this.reportingItems[i].quantity,
+          donor: this.reportingItems[i].donor,
+          units: this.reportingItems[i].units,
+          customer: this.reportingItems[i].customer,
+          date: this.reportingItems[i].date.toDate(),
+        }
       }
     }
-
+    else if (type == 'summary'){
+      for(let i = 0; i < this.reportingItems.length; i++) {
+        this.TABLE_DATA3[i] = {
+          item: this.reportingItems[i].item,
+          quantityChange: this.reportingItems[i].quantity,
+          units: this.reportingItems[i].units,
+          date: this.reportingItems[i].date.toDate(),
+        }
+      }
+    }
   }
 
   createReport(type){
@@ -667,60 +703,109 @@ export class CurrentComponent implements OnInit {
 
     var text = "Transactions"
     if(type == 'transaction'){
-      await this.generateReport(timePeriod);
+      await this.generateReport(timePeriod, type);
       text = 'Recent Transactions';
     }
     else if (type == 'summary'){
-      await this.generateSummaryReport(timePeriod);
+      await this.generateSummaryReport(timePeriod, type);
       text = 'Transaction Summary By Item';
     }
     this.TABLE_DATA2.sort(this.objectComparisonCallback);
-    console.log(this.TABLE_DATA2);
-    const documentDefinition = {
-      content: [
-        // Previous configuration
-        {
-              text: text,
-              bold: true,
-              fontSize: 20,
-              alignment: 'center',
-              margin: [0, 0, 0, 20]
-            },
-        {
-            table: {
-                headerRows: 1,
-                widths: ['20%', '20%', '20%', '7%', '13%', '20%'],
-                // widths: ['20%', '20%', '20%', '20%', '20%'],
-                body: [
-                    [ {text: 'Item', style: 'header'},
-                      {text: 'Donor', style: 'header'},
-                      {text: 'Customer', style: 'header'},
-                      {text: 'Qty', style: 'header'},
-                      {text: 'Units', style: 'header'},
-                      {text: 'Date', style: 'header'}],
-                    ...this.TABLE_DATA2.map(p => ([
-                      {text: p.item, alignment: 'left'},
-                      {text: p.donor, alignment: 'left'},
-                      {text: p.customer, alignment: 'left'},
-                      {text: p.quantity, alignment: 'center'},
-                      {text: p.units, alignment: 'center'},
-                      {text: this.months[p.date.getMonth()] + " " + p.date.getDate() + ", " + p.date.getFullYear(),
-                          alignment: 'center'}])),
-                  ]
-            }
-        }
-      ],
-      styles: {
-        header: {
-          fontSize: 16,
-          bold: true,
-          alignment: 'center'
-        }
-      }
-    };
+    // console.log(this.TABLE_DATA2);
+    // if (type == 'transaction'){
+    //     const documentDefinition = {
+    //     content: [
+    //       // Previous configuration
+    //       {
+    //             text: text,
+    //             bold: true,
+    //             fontSize: 20,
+    //             alignment: 'center',
+    //             margin: [0, 0, 0, 20]
+    //           },
+    //       {
+    //           table: {
+    //               headerRows: 1,
+    //               widths: ['20%', '20%', '20%', '7%', '13%', '20%'],
+    //               // widths: ['20%', '20%', '20%', '20%', '20%'],
+    //               body: [
+    //                   [ {text: 'Item', style: 'header'},
+    //                     {text: 'Donor', style: 'header'},
+    //                     {text: 'Customer', style: 'header'},
+    //                     {text: 'Qty', style: 'header'},
+    //                     {text: 'Units', style: 'header'},
+    //                     {text: 'Date', style: 'header'}],
+    //                   ...this.TABLE_DATA2.map(p => ([
+    //                     {text: p.item, alignment: 'left'},
+    //                     {text: p.donor, alignment: 'left'},
+    //                     {text: p.customer, alignment: 'left'},
+    //                     {text: p.quantity, alignment: 'center'},
+    //                     {text: p.units, alignment: 'center'},
+    //                     {text: this.months[p.date.getMonth()] + " " + p.date.getDate() + ", " + p.date.getFullYear(),
+    //                         alignment: 'center'}])),
+    //                 ]
+    //           }
+    //       }
+    //     ],
+    //     styles: {
+    //       header: {
+    //         fontSize: 16,
+    //         bold: true,
+    //         alignment: 'center'
+    //       }
+    //     }
+    //   };
+    // }
+    // else if (type == 'summary'){
+    //   const documentDefinition = {
+    //     content: [
+    //       // Previous configuration
+    //       {
+    //             text: text,
+    //             bold: true,
+    //             fontSize: 20,
+    //             alignment: 'center',
+    //             margin: [0, 0, 0, 20]
+    //           },
+    //       {
+    //           table: {
+    //               headerRows: 1,
+    //               widths: ['20%', '7%', '13%', '20%'],
+    //               // widths: ['20%', '20%', '20%', '20%', '20%'],
+    //               body: [
+    //                   [ {text: 'Item', style: 'header'},
+    //                     {text: 'Qty', style: 'header'},
+    //                     {text: 'Units', style: 'header'},
+    //                     {text: 'Date', style: 'header'}],
+    //                   ...this.TABLE_DATA2.map(p => ([
+    //                     {text: p.item, alignment: 'left'},
+    //                     {text: p.quantity, alignment: 'center'},
+    //                     {text: p.units, alignment: 'center'},
+    //                     {text: this.months[p.date.getMonth()] + " " + p.date.getDate() + ", " + p.date.getFullYear(),
+    //                         alignment: 'center'}])),
+    //                 ]
+    //           }
+    //       }
+    //     ],
+    //     styles: {
+    //       header: {
+    //         fontSize: 16,
+    //         bold: true,
+    //         alignment: 'center'
+    //       }
+    //     }
+    //   };
+    //   }
 
     if (this.reportingItems.length > 0){
-      pdfMake.createPdf(documentDefinition).open();
+      if (type == 'transaction'){
+        this.downloadReport2(this.TABLE_DATA2, type);
+      }
+      else if (type == 'summary'){
+        this.downloadReport2(this.TABLE_DATA3, type);
+      }
+      // this.downloadFile(documentDefinition);
+      // pdfMake.createPdf(documentDefinition).open();
       this.reportingItems = [];
       this.TABLE_DATA2 = [];
     }
@@ -728,7 +813,7 @@ export class CurrentComponent implements OnInit {
   }
 
 
-  async generateSummaryReport(timePeriod){
+  async generateSummaryReport(timePeriod,type){
     var today = new Date();
     var lastDate = new Date();
     lastDate.setDate(today.getDate() - timePeriod);
@@ -759,14 +844,26 @@ export class CurrentComponent implements OnInit {
       console.error("error:", error);
     })
 
-    for(let i = 0; i < this.reportingItems.length; i++) {
-      this.TABLE_DATA2[i] = {
-        item: this.reportingItems[i].item,
-        quantity: this.reportingItems[i].quantity,
-        donor: this.reportingItems[i].donor,
-        units: this.reportingItems[i].units,
-        customer: this.reportingItems[i].customer,
-        date: this.reportingItems[i].date.toDate(),
+    if (type == 'transaction'){
+      for(let i = 0; i < this.reportingItems.length; i++) {
+        this.TABLE_DATA2[i] = {
+          item: this.reportingItems[i].item,
+          quantityChange: this.reportingItems[i].quantity,
+          donor: this.reportingItems[i].donor,
+          units: this.reportingItems[i].units,
+          customer: this.reportingItems[i].customer,
+          date: this.reportingItems[i].date.toDate(),
+        }
+      }
+    }
+    else if (type == 'summary'){
+      for(let i = 0; i < this.reportingItems.length; i++) {
+        this.TABLE_DATA3[i] = {
+          item: this.reportingItems[i].item,
+          quantityChange: this.reportingItems[i].quantity,
+          units: this.reportingItems[i].units,
+          date: this.reportingItems[i].date.toDate(),
+        }
       }
     }
 
@@ -803,6 +900,4 @@ export class CurrentComponent implements OnInit {
     }
     return this.compareItems(arrayItemA, arrayItemB);
   }
-
-
 }

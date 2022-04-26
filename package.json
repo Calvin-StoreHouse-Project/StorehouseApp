@@ -25,6 +25,7 @@
     "file-saver": "^2.0.5",
     "firebase": "^9.6.8",
     "pdfmake": "^0.2.5",
+    "pdfmake-to-excel": "^1.1.56",
     "rxfire": "^6.0.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
