@@ -1,5 +1,6 @@
 {
   "projects": {
-    "storehouse": "storehouse-eb19b"
+    "storehouse": "storehouse-eb19b",
+    "default": "storehouse-eb19b"
   }
 }
